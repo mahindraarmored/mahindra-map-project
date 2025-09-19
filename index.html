@@ -7,38 +7,44 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
   <style>
-    html,body,#map{height:100%;margin:0}
-    .panel{
-      position:absolute;top:10px;left:10px;z-index:2;background:#fff;
-      padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
-      font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      max-width: 450px; /* NEW: Sets a maximum width for the panel */
-    }
-    .panel label{display:flex;gap:6px;align-items:center}
-    .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
-    .panel button{cursor:pointer}
-    .legend{
-      position:absolute;bottom:10px;left:10px;z-index:2;background:#fff;padding:8px 10px;border-radius:8px;
-      box-shadow:0 6px 18px rgba(0,0,0,.12); font:13px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-    .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
-    
-    /* Corrected Pop-up CSS */
-    .popup h3 {
-      margin: 0 0 4px;
-      font-size: 16px;
-    }
-    .popup p {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.35;
-      word-break: break-all;
-    }
-    .mapboxgl-popup-content {
-      padding: 10px;
-    }
-  </style>
+  html,body,#map{height:100%;margin:0}
+  .panel{
+    position:absolute;top:10px;left:10px;z-index:2;background:#fff;
+    padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
+    /* MODIFIED: Using clamp for a responsive font size */
+    font: clamp(12px, 1.4vw, 16px)/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    max-width: 450px;
+  }
+  .panel label{display:flex;gap:6px;align-items:center}
+  .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+  .panel button{cursor:pointer}
+  .legend{
+    position:absolute;bottom:10px;left:10px;z-index:2;background:#fff;padding:8px 10px;border-radius:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,.12); 
+    /* MODIFIED: Using clamp for a responsive font size */
+    font: clamp(11px, 1.3vw, 15px)/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  }
+  .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
+  .popup h3 {
+    margin: 0 0 4px;
+    /* MODIFIED: Using clamp for a responsive font size */
+    font-size: clamp(14px, 1.5vw, 18px);
+  }
+  .popup p {
+    margin: 0;
+    /* MODIFIED: Using clamp for a responsive font size */
+    font-size: clamp(12px, 1.3vw, 14px);
+    line-height: 1.35;
+    word-break: break-all;
+  }
+  .mapboxgl-popup-content {
+    padding: 10px;
+    /* NEW: Constrains the popup width to prevent it from being too wide */
+    max-width: 250px;
+  }
+</style>
+  
 </head>
 <body>
   <div class="panel">
@@ -289,3 +295,4 @@
   </script>
 </body>
 </html>
+
