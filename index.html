@@ -255,12 +255,39 @@ if (p.logo) {
         type:'circle',
         source:'svc',
         filter:['!',['has','point_count']],
-        paint:{
-          'circle-radius': 7,
-          'circle-color': ['case', ['==', ['get', 'serviceKey'], 'fullCapabilityHub'], '#e11d48', '#000000'],
-          'circle-stroke-width': 1,
-          'circle-stroke-color': '#ffffff'
-        }
+        paint: {
+  // Set circle radius based on serviceKey
+  'circle-radius': [
+    'case',
+    ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
+    7, // Radius 7 for 'fullCapabilityHub'
+    4  // Radius 4 for all other values
+  ],
+  
+  // Set circle fill color based on serviceKey
+  'circle-color': [
+    'case',
+    ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
+    '#e41837', // Red for 'fullCapabilityHub'
+    '#ffffff'  // Black for all other values
+  ],
+  
+  // Set stroke width based on serviceKey
+  'circle-stroke-width': [
+    'case',
+    ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
+    1, // Stroke width 1 for 'fullCapabilityHub'
+    3  // Stroke width 3 for all other values
+  ],
+  
+  // Set stroke color based on serviceKey
+  'circle-stroke-color': [
+    'case',
+    ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
+    '#ffffff', // White for 'fullCapabilityHub'
+    '#e41837'  // Red for all other values
+  ]
+}
       });
       map.on('click','points', (e) => {
         const f = e.features[0];
@@ -330,5 +357,6 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
 
 
