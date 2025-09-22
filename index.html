@@ -1,603 +1,277 @@
 <!doctype html>
-
 <html>
-
 <head>
-
-  <meta charset="utf-8" />
-
-  <title>Commitment beyond Delivery</title>
-
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-    <meta property="og:title" content="Global Support Hubs - Mahindra Emirates Vehicle Armouring" />
-
-  <meta property="og:description" content="Global network of service hubs and support locations dedicated to Armoured Vehicle Spares & Maintenance." />
-
-  <meta property="og:image" content="https://support.mahindraarmored.com/MEVA LOGO.png" />
-
-  <meta property="og:url" content="https://support.mahindraarmored.com/" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
-
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
-  <style>
-
-  html,body,#map{height:100%;margin:0}
-
-  .panel{
-
-    position:absolute;top:10px;left:10px;z-index:2;background:#fff;
-
-    padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
-
-    /* MODIFIED: Using clamp for a responsive font size */
-
-    font: clamp(12px, 1.4vw, 16px)/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-
-    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-
-    max-width: 450px;
-
-  }
-
-  .panel label{display:flex;gap:6px;align-items:center}
-
-  .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
-
-  .panel button{cursor:pointer}
-
-  .legend{
-
-    position:absolute;bottom:10px;left:10px;z-index:2;background:#fff;padding:8px 10px;border-radius:8px;
-
-    box-shadow:0 6px 18px rgba(0,0,0,.12); 
-
-    /* MODIFIED: Using clamp for a responsive font size */
-
-    font: clamp(11px, 1.3vw, 15px)/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-
-  }
-
-  .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
-
-  .popup h3 {
-
-    margin: 0 0 4px;
-
-    /* MODIFIED: Using clamp for a responsive font size */
-
-    font-size: clamp(14px, 1.5vw, 18px);
-
-  }
-
-  .popup p {
-
-    margin: 0;
-
-    /* MODIFIED: Using clamp for a responsive font size */
-
-    font-size: clamp(12px, 1.3vw, 14px);
-
-    line-height: 1.35;
-
-    word-break: break-all;
-
-  }
-
-  .mapboxgl-popup-content {
-
-    padding: 10px;
-
-    /* NEW: Constrains the popup width to prevent it from being too wide */
-
-    max-width: 250px;
-
-  }
-
-</style>
-
-  
-
+  <meta charset="utf-8" />
+  <title>Mahindra Armored — Service Network</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <style>
+    html,body,#map{height:100%;margin:0}
+    .panel{
+      position:absolute;top:10px;left:10px;z-index:2;background:#fff;
+      padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
+      font: clamp(12px, 1.4vw, 16px)/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      max-width: 450px;
+    }
+    .panel label{display:flex;gap:6px;align-items:center}
+    .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+    .panel button{cursor:pointer}
+    .legend{
+      position:absolute;bottom:10px;left:10px;z-index:2;background:#fff;padding:8px 10px;border-radius:8px;
+      box-shadow:0 6px 18px rgba(0,0,0,.12);
+      font: clamp(11px, 1.3vw, 15px)/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
+    .popup h3 {
+      margin: 0 0 4px;
+      font-size: clamp(14px, 1.5vw, 18px);
+    }
+    .popup p {
+      margin: 0;
+      font-size: clamp(12px, 1.3vw, 14px);
+      line-height: 1.35;
+      word-break: break-all;
+    }
+    .mapboxgl-popup-content {
+      padding: 10px;
+      max-width: 250px;
+    }
+  </style>
 </head>
-
 <body>
-
-  <div class="panel">
-
-    <label>Region:
-
-      <select id="regionFilter">
-
-        <option value="">All</option>
-
-      </select>
-
-    </label>
-
-    <button id="locateMe">📍 Use My Location</button>
-
-    <button id="refreshBtn">↻ Refresh</button>
-
-    <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; width: 100%;">
-
-      <div><span class="k" style="background:#e11d48"></span> AV Manufacturing Facility</div>
-
-      <div><span class="k" style="background:#000000"></span> Regional Support Hubs</div>
-
-    </div>
-
-  </div>
-
-
-
-  <div id="map" role="region" aria-label="Global Service Network"></div>
-
-
-
-  <script>
-
-  // ====== CONFIG ======
-
-  const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
-
-  const HYGRAPH_ENDPOINT = 'https://api-ap-south-1.hygraph.com/v2/cmfpk332g005s08uylh0ezd8a/master';
-
-
-
-  // UPDATED: Label map for regions to match your Hygraph data
-
-  const REGION_LABEL = {
-
-    AMER: 'AMER → North & Latin America',
-
-    EMEA: 'EMEA → Europe, Middle East, Africa',
-
-    APAC: 'APAC → Asia Pacific (Asia + Oceania)'
-
-  };
-
-
-
-  // ADDED: Label map for services to fix the popup
-
-  const SERVICE_LABEL = {
-
-    'fullCapabilityHub': 'Full-Capability Hub',
-
-    'otherServiceLocations': 'Other Service Locations',
-
-    'certifiedService': 'Certified Service'
-
-  };
-
-
-
-  // ====== GQL QUERY ======
-
-  // MODIFIED: Added 'image { url }' to fetch the logo
-
-  const QUERY = `
-
-    query {
-
-      serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
-
-        id name country region services: serviceRange phone email
-
-        location { latitude longitude }
-
-        updatedAt
-
-        image { url }
-
-      }
-
-    }`;
-
-
-
-  // ====== MAP INIT ======
-
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-
-  const map = new mapboxgl.Map({
-
-    container:'map',
-
-    style:'mapbox://styles/mapbox/streets-v12',
-
-    // UPDATED: Set the default center and zoom to match the desired view
-
-    center:[25.0, 15.0],
-
-    zoom:2.5
-
-  });
-
-  map.addControl(new mapboxgl.NavigationControl());
-
-
-
-  // ====== DOM ======
-
-  const regionSelect  = document.getElementById('regionFilter');
-
-  const locateBtn     = document.getElementById('locateMe');
-
-  const refreshBtn    = document.getElementById('refreshBtn');
-
-
-
-  // ====== STATE ======
-
-  let allCenters = [];
-
-  let currentGeo = null;
-
-
-
-  // ====== FETCH ======
-
-  async function fetchCenters(){
-
-    const res = await fetch(HYGRAPH_ENDPOINT, {
-
-      method:'POST',
-
-      headers:{
-
-        'Content-Type':'application/json',
-
-        'Cache-Control':'no-cache'
-
-      },
-
-      cache:'no-store',
-
-      body: JSON.stringify({ query: QUERY })
-
-    });
-
-    const json = await res.json();
-
-    if (!json.data) {
-
-      console.error('Hygraph error:', json.errors || json);
-
-      return [];
-
-    }
-
-    return (json.data.serviceNetworks || []).filter(c => c.location);
-
-  }
-
-
-
-  // ====== FILTER UI BUILD (Regions only) ======
-
-  function buildRegionFilter(list){
-
-    const regions = [...new Set(list.map(c => c.region).filter(Boolean))].sort();
-
-    regionSelect.innerHTML = '<option value="">All</option>' +
-
-      regions.map(r => `<option value="${r}">${REGION_LABEL[r] || r}</option>`).join('');
-
-  }
-
-
-
-  // ====== HELPERS ======
-
-  function toGeoJSON(list){
-
-    return {
-
-      type:'FeatureCollection',
-
-      features: list.map(c => ({
-
-        type:'Feature',
-
-        properties: {
-
-          id: c.id,
-
-          name: c.name,
-
-          country: c.country || '',
-
-          region: c.region || '',
-
-          phone: c.phone || '',
-
-          email: c.email || '',
-
-          serviceKey: c.services || '',
-
-          logo: c.image?.url || ''
-
-        },
-
-        geometry:{ type:'Point', coordinates:[c.location.longitude, c.location.latitude] }
-
-      }))
-
-    };
-
-  }
-
-
-
-  function popupHTML(p, lat, lng){
-
-    const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
-
-    const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
-
-    const phoneHTML   = p.phone ? `<a href="tel:${p.phone}">${p.phone}</a>` : '';
-
-    const emailHTML   = p.email ? `<a href="mailto:${p.email}">${p.email}</a>` : '';
-
-    // Corrected the directions URL format
-
-    const dirURL      = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-
-
-
-    // Logo or fallback placeholder
-
-    const logoHTML = p.logo 
-
-      ? `<img src="${p.logo}" alt="${p.name} logo" style="max-width:100px; max-height:60px; display:block; margin-bottom:8px;">`
-
-      : `<div style="width:100px;height:60px;background:#ccc;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">No Logo</div>`;
-
-
-
-    return `
-
-      <div class="popup">
-
-        ${logoHTML}
-
-        <h3>${p.name}</h3>
-
-        <p><strong>Region:</strong> ${regionText || '—'}</p>
-
-        <p><strong>Country:</strong> ${p.country || '—'}</p>
-
-        <p><strong>Contact Number:</strong> ${phoneHTML || '—'}</p>
-
-        <p><strong>Email ID:</strong> ${emailHTML || '—'}</p>
-
-        <p><strong>Service Range:</strong> ${serviceText || '—'}</p>
-
-        <p><a target="_blank" href="${dirURL}">Get Directions</a></p>
-
-      </div>`;
-
-  }
-
-
-
-  // ====== FILTER + RENDER (Region only) ======
-
-  // MODIFIED: Added logic to move the map to the selected region
-
-  function applyFiltersAndRender(){
-
-    const r = regionSelect.value;
-
-
-
-    const filtered = allCenters.filter(c => {
-
-      const okR = !r || c.region === r;
-
-      return okR;
-
-    });
-
-
-
-    currentGeo = toGeoJSON(filtered);
-
-    const src = map.getSource('svc');
-
-    if (src) {
-
-      src.setData(currentGeo);
-
-    } else {
-
-      // first render
-
-      map.addSource('svc', { type:'geojson', data: currentGeo, cluster:true, clusterRadius:40 });
-
-      map.addLayer({ id:'clusters', type:'circle', source:'svc',
-
-        filter:['has','point_count'],
-
-        paint:{ 'circle-radius':['step',['get','point_count'],16,10,22,30,30] } });
-
-      map.addLayer({ id:'cluster-count', type:'symbol', source:'svc',
-
-        filter:['has','point_count'],
-
-        layout:{ 'text-field':['get','point_count_abbreviated'], 'text-size':12 } });
-
-      map.addLayer({
-
-        id:'points',
-
-        type:'circle',
-
-        source:'svc',
-
-        filter:['!',['has','point_count']],
-
-        paint:{
-
-          'circle-radius': 7,
-
-          'circle-color': ['case', ['==', ['get', 'serviceKey'], 'fullCapabilityHub'], '#e11d48', '#000000'],
-
-          'circle-stroke-width': 1,
-
-          'circle-stroke-color': '#ffffff'
-
-        }
-
-      });
-
-      map.on('click','points', (e) => {
-
-        const f = e.features[0];
-
-        const p = f.properties;
-
-        const [lng,lat] = f.geometry.coordinates;
-
-        new mapboxgl.Popup().setLngLat([lng,lat]).setHTML(popupHTML(p, lat, lng)).addTo(map);
-
-      });
-
-      map.on('click','clusters', (e) => {
-
-        const feats = map.queryRenderedFeatures(e.point, { layers:['clusters'] });
-
-        const clusterId = feats[0].properties.cluster_id;
-
-        map.getSource('svc').getClusterExpansionZoom(clusterId, (err, zoom) => {
-
-          if (err) return;
-
-          map.easeTo({ center: feats[0].geometry.coordinates, zoom });
-
-        });
-
-      });
-
-    }
-
-
-
-    // NEW LOGIC: Adjust map view based on filtered points
-
-    if (filtered.length > 0) {
-
-        const bounds = new mapboxgl.LngLatBounds();
-
-        filtered.forEach(center => {
-
-            if (center.location) {
-
-                bounds.extend([center.location.longitude, center.location.latitude]);
-
-            }
-
-        });
-
-
-
-        map.fitBounds(bounds, {
-
-            padding: 50,
-
-            maxZoom: 6
-
-        });
-
-    } else {
-
-        map.flyTo({ center: [20, 10], zoom: 2 });
-
-    }
-
-  }
-
-
-
-  // ====== REFRESH LOGIC ======
-
-  async function refreshData({rebuildRegion=false} = {}){
-
-    const prevRegion = regionSelect.value;
-
-
-
-    allCenters = await fetchCenters();
-
-    if (rebuildRegion) buildRegionFilter(allCenters);
-
-
-
-    // restore region
-
-    regionSelect.value = prevRegion || '';
-
-
-
-    applyFiltersAndRender();
-
-  }
-
-
-
-  // ====== EVENTS ======
-
-  regionSelect.onchange  = applyFiltersAndRender;
-
-
-
-  locateBtn.onclick = () => {
-
-    if (!navigator.geolocation) return alert('Geolocation not supported');
-
-    navigator.geolocation.getCurrentPosition(pos=>{
-
-      const { latitude, longitude } = pos.coords;
-
-      map.flyTo({ center:[longitude, latitude], zoom: 6 });
-
-      new mapboxgl.Marker({color:'#1f2937'}).setLngLat([longitude, latitude]).addTo(map);
-
-    });
-
-  };
-
-
-
-  refreshBtn.onclick = () => refreshData({rebuildRegion:true});
-
-  setInterval(() => refreshData(), 60000);
-
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshData(); });
-
-
-
-  // ====== BOOT ======
-
-  (async () => {
-
-    allCenters = await fetchCenters();
-
-    buildRegionFilter(allCenters);
-
-    regionSelect.value = 'EMEA'; // NEW: Sets the default selected region to EMEA
-
-    map.on('load', applyFiltersAndRender);
-
-  })();
-
-  </script>
-
+  <div class="panel">
+    <label>Region:
+      <select id="regionFilter">
+        <option value="">All</option>
+      </select>
+    </label>
+    <button id="locateMe">📍 Use My Location</button>
+    <button id="refreshBtn">↻ Refresh</button>
+    <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; width: 100%;">
+      <div><span class="k" style="background:#e11d48"></span> AV Manufacturing Facility</div>
+      <div><span class="k" style="background:#000000"></span> Regional Support Hubs</div>
+    </div>
+  </div>
+
+  <div id="map" role="region" aria-label="Global Service Network"></div>
+
+  <script>
+  // ====== CONFIG ======
+  const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
+  const HYGRAPH_ENDPOINT = 'https://api-ap-south-1.hygraph.com/v2/cmfpk332g005s08uylh0ezd8a/master';
+
+  const REGION_LABEL = {
+    AMER: 'AMER → North & Latin America',
+    EMEA: 'EMEA → Europe, Middle East, Africa',
+    APAC: 'APAC → Asia Pacific (Asia + Oceania)'
+  };
+
+  const SERVICE_LABEL = {
+    'fullCapabilityHub': 'Full-Capability Hub',
+    'otherServiceLocations': 'Other Service Locations',
+    'certifiedService': 'Certified Service'
+  };
+
+  // ====== GQL QUERY ======
+  const QUERY = `
+    query {
+      serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
+        id name country region services: serviceRange phone email
+        location { latitude longitude }
+        updatedAt
+        image { url }
+      }
+    }`;
+
+  // ====== MAP INIT ======
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+  const map = new mapboxgl.Map({
+    container:'map',
+    style:'mapbox://styles/mapbox/streets-v12',
+    center:[25.0, 15.0],
+    zoom:2.5
+  });
+  map.addControl(new mapboxgl.NavigationControl());
+
+  // ====== DOM ======
+  const regionSelect  = document.getElementById('regionFilter');
+  const locateBtn     = document.getElementById('locateMe');
+  const refreshBtn    = document.getElementById('refreshBtn');
+
+  // ====== STATE ======
+  let allCenters = [];
+  let currentGeo = null;
+
+  // ====== FETCH ======
+  async function fetchCenters(){
+    const res = await fetch(HYGRAPH_ENDPOINT, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Cache-Control':'no-cache'
+      },
+      cache:'no-store',
+      body: JSON.stringify({ query: QUERY })
+    });
+    const json = await res.json();
+    if (!json.data) {
+      console.error('Hygraph error:', json.errors || json);
+      return [];
+    }
+    return (json.data.serviceNetworks || []).filter(c => c.location);
+  }
+
+  // ====== FILTER UI BUILD (Regions only) ======
+  function buildRegionFilter(list){
+    const regions = [...new Set(list.map(c => c.region).filter(Boolean))].sort();
+    regionSelect.innerHTML = '<option value="">All</option>' +
+      regions.map(r => `<option value="${r}">${REGION_LABEL[r] || r}</option>`).join('');
+  }
+
+  // ====== HELPERS ======
+  function toGeoJSON(list){
+    return {
+      type:'FeatureCollection',
+      features: list.map(c => ({
+        type:'Feature',
+        properties: {
+          id: c.id,
+          name: c.name,
+          country: c.country || '',
+          region: c.region || '',
+          phone: c.phone || '',
+          email: c.email || '',
+          serviceKey: c.services || '',
+          logo: c.image?.url || ''
+        },
+        geometry:{ type:'Point', coordinates:[c.location.longitude, c.location.latitude] }
+      }))
+    };
+  }
+
+  function popupHTML(p, lat, lng){
+    const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
+    const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
+    const phoneHTML   = p.phone ? `<a href="tel:${p.phone}">${p.phone}</a>` : '';
+    const emailHTML   = p.email ? `<a href="mailto:${p.email}">${p.email}</a>` : '';
+    const dirURL      = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+    const logoHTML = p.logo
+      ? `<img src="${p.logo}" alt="${p.name} logo" style="max-width:100px; max-height:60px; display:block; margin-bottom:8px;">`
+      : `<div style="width:100px;height:60px;background:#ccc;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">No Logo</div>`;
+
+    return `
+      <div class="popup">
+        ${logoHTML}
+        <h3>${p.name}</h3>
+        <p><strong>Region:</strong> ${regionText || '—'}</p>
+        <p><strong>Country:</strong> ${p.country || '—'}</p>
+        <p><strong>Contact Number:</strong> ${phoneHTML || '—'}</p>
+        <p><strong>Email ID:</strong> ${emailHTML || '—'}</p>
+        <p><strong>Service Range:</strong> ${serviceText || '—'}</p>
+        <p><a target="_blank" href="${dirURL}">Get Directions</a></p>
+      </div>`;
+  }
+
+  // ====== FILTER + RENDER (Region only) ======
+  function applyFiltersAndRender(){
+    const r = regionSelect.value;
+    const filtered = allCenters.filter(c => {
+      const okR = !r || c.region === r;
+      return okR;
+    });
+
+    currentGeo = toGeoJSON(filtered);
+    const src = map.getSource('svc');
+    if (src) {
+      src.setData(currentGeo);
+    } else {
+      map.addSource('svc', { type:'geojson', data: currentGeo, cluster:true, clusterRadius:40 });
+      map.addLayer({ id:'clusters', type:'circle', source:'svc',
+        filter:['has','point_count'],
+        paint:{ 'circle-radius':['step',['get','point_count'],16,10,22,30,30] } });
+      map.addLayer({ id:'cluster-count', type:'symbol', source:'svc',
+        filter:['has','point_count'],
+        layout:{ 'text-field':['get','point_count_abbreviated'], 'text-size':12 } });
+      map.addLayer({
+        id:'points',
+        type:'circle',
+        source:'svc',
+        filter:['!',['has','point_count']],
+        paint:{
+          'circle-radius': 7,
+          'circle-color': ['case', ['==', ['get', 'serviceKey'], 'fullCapabilityHub'], '#e11d48', '#000000'],
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#ffffff'
+        }
+      });
+      map.on('click','points', (e) => {
+        const f = e.features[0];
+        const p = f.properties;
+        const [lng,lat] = f.geometry.coordinates;
+        new mapboxgl.Popup().setLngLat([lng,lat]).setHTML(popupHTML(p, lat, lng)).addTo(map);
+      });
+      map.on('click','clusters', (e) => {
+        const feats = map.queryRenderedFeatures(e.point, { layers:['clusters'] });
+        const clusterId = feats[0].properties.cluster_id;
+        map.getSource('svc').getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) return;
+          map.easeTo({ center: feats[0].geometry.coordinates, zoom });
+        });
+      });
+    }
+
+    if (filtered.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      filtered.forEach(center => {
+        if (center.location) {
+          bounds.extend([center.location.longitude, center.location.latitude]);
+        }
+      });
+
+      map.fitBounds(bounds, {
+        padding: 50,
+        maxZoom: 6
+      });
+    } else {
+      map.flyTo({ center: [20, 10], zoom: 2 });
+    }
+  }
+
+  // ====== REFRESH LOGIC ======
+  async function refreshData({rebuildRegion=false} = {}){
+    const prevRegion = regionSelect.value;
+    allCenters = await fetchCenters();
+    if (rebuildRegion) buildRegionFilter(allCenters);
+    regionSelect.value = prevRegion || '';
+    applyFiltersAndRender();
+  }
+
+  // ====== EVENTS ======
+  regionSelect.onchange  = applyFiltersAndRender;
+
+  locateBtn.onclick = () => {
+    if (!navigator.geolocation) return alert('Geolocation not supported');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const { latitude, longitude } = pos.coords;
+      map.flyTo({ center:[longitude, latitude], zoom: 6 });
+      new mapboxgl.Marker({color:'#1f2937'}).setLngLat([longitude, latitude]).addTo(map);
+    });
+  };
+
+  refreshBtn.onclick = () => refreshData({rebuildRegion:true});
+  setInterval(() => refreshData(), 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshData(); });
+
+  // ====== BOOT ======
+  (async () => {
+    allCenters = await fetchCenters();
+    buildRegionFilter(allCenters);
+    regionSelect.value = 'EMEA';
+    map.on('load', applyFiltersAndRender);
+  })();
+  </script>
 </body>
-
 </html>
