@@ -251,7 +251,7 @@ if (p.logo) {
     if (src) {
       src.setData(currentGeo);
     } else {
-      map.addSource('svc', { type:'geojson', data: currentGeo, cluster:true, clusterRadius:40 });
+      map.addSource('svc', { type:'geojson', data: currentGeo, cluster:false });
       map.addLayer({ id:'clusters', type:'circle', source:'svc',
         filter:['has','point_count'],
         paint:{ 'circle-radius':['step',['get','point_count'],16,10,22,30,30] } });
@@ -365,6 +365,7 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
 
 
 
