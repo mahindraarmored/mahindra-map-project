@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-  <style>
+  <link href="https://fonts.googleapis.com/css2?family=Georama:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
     html,body,#map{height:100%;margin:0}
     .panel{
       position:absolute;top:10px;left:10px;z-index:2;background:#fff;
@@ -37,7 +39,27 @@
     .mapboxgl-popup-content {
       padding: 10px;
       max-width: 250px;
+ 	
     }
+  </style>
+
+ <style>
+    .mapboxgl-popup-content { max-width: min(90vw, 420px); }
+
+    .popup-footer { 
+  text-align: center;
+  margin-top: 10px; 
+  padding-top: 0;        /* no extra padding */
+  border-top: none;      /* remove grey line */
+}
+
+.popup-footer img {
+  display: block;
+  width: 100%;           /* span full popup width */
+  height: auto;
+  margin: 0 auto;        /* center horizontally */
+}
+
   </style>
 </head>
 <body>
@@ -71,19 +93,20 @@
   const SERVICE_LABEL = {
     'fullCapabilityHub': 'Full-Capability Hub',
     'otherServiceLocations': 'Other Service Locations',
-    'certifiedService': 'Certified Service'
+    'supportCenter': 'Armoured Vehicle Support'
   };
 
   // ====== GQL QUERY ======
   const QUERY = `
-    query {
-      serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
-        id name country region services: serviceRange phone email
-        location { latitude longitude }
-        updatedAt
-        image { url }
-      }
-    }`;
+  query {
+    serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
+      id name country region hubID services: serviceRange phone email
+      location { latitude longitude }
+      updatedAt
+      image { url }
+    }
+  }`;
+
 
   // ====== MAP INIT ======
   mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -137,15 +160,17 @@
       features: list.map(c => ({
         type:'Feature',
         properties: {
-          id: c.id,
-          name: c.name,
-          country: c.country || '',
-          region: c.region || '',
-          phone: c.phone || '',
-          email: c.email || '',
-          serviceKey: c.services || '',
-          logo: c.image?.url || ''
-        },
+  id: c.id,
+  name: c.name,
+  country: c.country || '',
+  region: c.region || '',
+  hubID: c.hubID || '',            // ✅ added
+  phone: c.phone || '',
+  email: c.email || '',
+  serviceKey: c.services || '',
+  logo: c.image?.url || ''
+},
+
         geometry:{ type:'Point', coordinates:[c.location.longitude, c.location.latitude] }
       }))
     };
@@ -162,17 +187,23 @@
       ? `<img src="${p.logo}" alt="${p.name} logo" style="max-width:100px; max-height:60px; display:block; margin-bottom:8px;">`
       : `<div style="width:100px;height:60px;background:#ccc;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">No Logo</div>`;
 
-    return `
-      <div class="popup">
-        ${logoHTML}
-        <h3>${p.name}</h3>
-        <p><strong>Region:</strong> ${regionText || '—'}</p>
-        <p><strong>Country:</strong> ${p.country || '—'}</p>
-        <p><strong>Contact Number:</strong> ${phoneHTML || '—'}</p>
-        <p><strong>Email ID:</strong> ${emailHTML || '—'}</p>
-        <p><strong>Service Range:</strong> ${serviceText || '—'}</p>
-        <p><a target="_blank" href="${dirURL}">Get Directions</a></p>
-      </div>`;
+return `
+  <div class="popup" style="font-family: 'Georama', sans-serif;">
+    ${logoHTML}
+      <h3>MEVA - ${p.hubID}</h3>
+      <p><strong>${p.name || '—'}</strong></p>
+        <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
+    <p><strong>Service Range:</strong> ${serviceText || '—'}</p>
+<br>
+    <p>📞 ${phoneHTML || '—'}</p>
+    <p>📧 ${emailHTML || '—'}</p>
+    <p style="margin-top:10px; text-align: right;"><a target="_blank" href="${dirURL}">Get Directions ➡️</a></p>
+<!-- Footer image -->
+    <div class="popup-footer">
+      <img src="file:///C:/Users/digit/Pictures/line-01.png" alt="MEVA Footer">
+    </div>
+  </div>`;
+
   }
 
   // ====== FILTER + RENDER (Region only) ======
