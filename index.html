@@ -26,6 +26,14 @@
       font: clamp(11px, 1.3vw, 15px)/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     }
     .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
+    .legend-item.red {
+        background-color: #e41837;
+        border: 1px solid #e41837;
+    }
+    .legend-item.white {
+        background-color: #ffffff;
+        border: 1px solid #e41837;
+    }
     .popup h3 {
       margin: 0 0 4px;
       font-size: clamp(14px, 1.5vw, 18px);
@@ -72,8 +80,8 @@
     <button id="locateMe">📍 Use My Location</button>
     <button id="refreshBtn">↻ Refresh</button>
     <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; width: 100%;">
-      <div><span class="k" style="background:#e11d48"></span> AV Manufacturing Facility</div>
-      <div><span class="k" style="background:#000000"></span> Regional Support Hubs</div>
+      <div><span class="k legend-item red"></span> AV Manufacturing Facility</div>
+      <div><span class="k legend-item white"></span> Regional Support Hubs</div>
     </div>
   </div>
 
@@ -269,7 +277,7 @@ if (p.logo) {
     'case',
     ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
     '#e41837', // Red for 'fullCapabilityHub'
-    '#ffffff'  // Black for all other values
+    '#ffffff'  // White for all other values
   ],
   
   // Set stroke width based on serviceKey
@@ -357,6 +365,7 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
 
 
 
