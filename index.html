@@ -359,12 +359,13 @@ if (p.logo) {
   (async () => {
     allCenters = await fetchCenters();
     buildRegionFilter(allCenters);
-    regionSelect.value = 'EMEA';
+    
     map.on('load', applyFiltersAndRender);
   })();
   </script>
 </body>
 </html>
+
 
 
 
