@@ -187,46 +187,42 @@ function popupHTML(p, lat, lng){
   const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
   const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
   
-  // Custom WhatsApp Message (Final Version)
+  // Custom WhatsApp Message (Final Version) - Cleaned of syntax errors
   const whatsappMsg = encodeURIComponent(
     `Hub ID: ${p.hubID || 'N/A'} | Support Request \n\n` +
 	`Good day,\n\n` + 
-    `I am contacting regarding:\n` +
+    `I am contacting regarding:\n` 
     );
   
-  // Define the WhatsApp icon HTML
+  // Define the WhatsApp and Mail icon HTML
   const whatsappIcon = '<img src="wa.png" alt="WhatsApp Icon" style="width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;">';
-const mailIcon = '<img src="mail.png" alt="WhatsApp Icon" style="width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;">';
-
+  const mailIcon = '<img src="mail.png" alt="Mail Icon" style="width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;">';
 	
-  // CHANGE 1 (Revised): WhatsApp link with pre-filled message and new icon
+  // WhatsApp link with pre-filled message
   const phoneHTML   = p.phone 
     ? `<a target="_blank" href="https://wa.me/971527118654?text=${whatsappMsg}">${whatsappIcon} Connect on Whatsapp </a>`  : '';
   
-	
-  // CHANGE 2: "Send Requirement Mail" replaces the email link
+  // "Send Requirement Mail" replaces the standard email link
   const emailHTML   = p.email ? `<a href="mailto:support@mahindraarmored.com">${mailIcon} Send Requirement Mail </a>` : '';
   
   const isFC = p.serviceKey === 'fullCapabilityHub';
 
-  // hero image for Full-Capability hubs (full width, “bleeds” to popup edges),
-  // small thumb for others; hides if there is no image.
-let logoHTML = '';
-if (p.logo) {
-  if (isFC) {
-    // Full-capability hub → large full-width logo
-    logoHTML = `
-      <div style="text-align:center; padding-top:10px; margin-bottom:8px;">
+  let logoHTML = '';
+  if (p.logo) {
+    if (isFC) {
+      // Full-capability hub → large full-width logo
+      logoHTML = `
+        <div style="text-align:center; padding-top:10px; margin-bottom:8px;">
+          <img src="${p.logo}" alt="${p.name} logo"
+              style="max-width:180px; height:auto; display:inline-block;">
+        </div>`;
+    } else {
+      // Other hubs → small thumbnail logo
+      logoHTML = `
         <img src="${p.logo}" alt="${p.name} logo"
-             style="max-width:180px; height:auto; display:inline-block;">
-      </div>`;
-  } else {
-    // Other hubs → small thumbnail logo
-    logoHTML = `
-      <img src="${p.logo}" alt="${p.name} logo"
-           style="max-width:25px;max-height:60px;display:block;margin-bottom:10px;">`;
+            style="max-width:25px;max-height:60px;display:block;margin-bottom:10px;">`;
+    }
   }
-}
 
  return `
   <div class="popup" style="font-family: 'Georama', sans-serif;">
@@ -236,7 +232,6 @@ if (p.logo) {
 
 	<p style="margin-top:10px;"><strong>Region:</strong> ${p.region || '—'} (${p.country || '—'})</p>
 
-    
     <p style="margin-top:10px; text-align: justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
 
     <br>
@@ -246,7 +241,6 @@ if (p.logo) {
     <div class="popup-footer"></div>
   </div>`;
 }
-
 
   // ====== FILTER + RENDER (Region only) ======
   function applyFiltersAndRender(){
@@ -375,6 +369,7 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
 
 
 
