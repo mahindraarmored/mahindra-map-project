@@ -185,8 +185,8 @@
         ${logoHTML}
         <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
         <h3>${p.hubID || ''}</h3>
-        <br>
-        <p style="margin-top:10px;"><strong>Country:</strong> (${p.country || '—'})</p>
+        
+        <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
         <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
         <br>
         <p>${phoneHTML || '—'}</p><br>
@@ -297,6 +297,7 @@
   </script>
 </body>
 </html>
+
 
 
 
