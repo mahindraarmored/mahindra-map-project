@@ -28,6 +28,26 @@
     .popup-footer{
       margin-top:10px;height:3px;background:#e11d48;border-radius:2px;
     }
+    .popup {
+      position: relative;
+      font-family: 'Georama', sans-serif;
+    }
+
+    .popup::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('watermark.png') center/200px no-repeat;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .popup * {
+      position: relative;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
@@ -180,27 +200,21 @@
           : `<img src="${p.logo}" alt="${p.name} logo" style="max-width:25px;max-height:60px;display:block;margin-bottom:10px">`)
       : '';
 
-    return `
-     <div class="popup" style="
-  font-family:'Georama', sans-serif;
-  position: relative;
-  background-image: logo.png; /* Replace with your image path */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 200px; /* Adjust size as needed */
-  opacity: 1; /* Keep content readable */
-">
-  ${logoHTML}
-  <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
-  <h3>${p.hubID || ''}</h3>
+return `
+  <div class="popup">
+    ${logoHTML}
+    <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
+    <h3>${p.hubID || ''}</h3>
+    
+    <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
+    <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
+    <br>
+    <p>${phoneHTML || '—'}</p><br>
+    <p>${emailHTML}</p>
+    <div class="popup-footer"></div>
+  </div>
+`;
 
-  <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
-  <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
-  <br>
-  <p>${phoneHTML || '—'}</p><br>
-  <p>${emailHTML}</p>
-  <div class="popup-footer"></div>
-</div>
 
 
   // ====== FILTER + RENDER ======
@@ -305,6 +319,7 @@
   </script>
 </body>
 </html>
+
 
 
 
