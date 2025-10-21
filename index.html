@@ -183,8 +183,9 @@
     return `
       <div class="popup" style="font-family:'Georama', sans-serif;">
         ${logoHTML}
+        <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
         <h3>${p.hubID || ''}</h3>
-        <p><strong>${p.name || '—'}</strong></p>
+        <br>
         <p style="margin-top:10px;"><strong>Country:</strong> (${p.country || '—'})</p>
         <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
         <br>
@@ -296,5 +297,6 @@
   </script>
 </body>
 </html>
+
 
 
