@@ -174,53 +174,58 @@
   const normalizePhone = s => (s||'').replace(/[^\d]/g,''); // keep digits for wa.me
 
   function popupHTML(p, lat, lng){
-    const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
-    const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
+  const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
+  const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
 
-    const whatsappMsg = encodeURIComponent(
-      `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\n` +
-      `Good day,\n\n` +
-      `I am contacting regarding:\n`
-    );
+  const whatsappMsg = encodeURIComponent(
+    `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\n` +
+    `Good day,\n\n` +
+    `I am contacting regarding:\n`
+  );
 
-    // If you want central number, set CENTRAL_WA = '971527118654' and use it below
-    const CENTRAL_WA = '971527118654';
-    const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+  const CENTRAL_WA = '971527118654';
+  const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
 
-    const whatsappIcon = '<img src="wa.png" alt="WhatsApp" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
-    const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
+  const whatsappIcon = '<img src="wa.png" alt="WhatsApp" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
+  const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
 
-    const phoneHTML = waNumber
-      ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon} Connect on WhatsApp</a>`
-      : '';
+  const phoneHTML = waNumber
+    ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon} Connect on WhatsApp</a>`
+    : '';
 
-    const emailAddr = p.email || 'support@mahindraarmored.com';
-    const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon} Send Requirement Mail</a>`;
+  const emailAddr = p.email || 'support@mahindraarmored.com';
+  const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon} Send Requirement Mail</a>`;
 
-    const isFC = p.serviceKey === 'fullCapabilityHub';
-    const logoHTML = p.logo
-      ? (isFC
-          ? `<div style="text-align:center;padding-top:10px;margin-bottom:8px;">
-               <img src="${p.logo}" alt="${p.name} logo" style="max-width:180px;height:auto;display:inline-block">
-             </div>`
-          : `<img src="${p.logo}" alt="${p.name} logo" style="max-width:25px;max-height:60px;display:block;margin-bottom:10px">`)
-      : '';
+  const isFC = p.serviceKey === 'fullCapabilityHub';
+  const logoHTML = p.logo
+    ? (isFC
+        ? `<div style="text-align:center;padding-top:10px;margin-bottom:8px;">
+             <img src="${p.logo}" alt="${p.name} logo" style="max-width:180px;height:auto;display:inline-block">
+           </div>`
+        : `<img src="${p.logo}" alt="${p.name} logo" style="max-width:25px;max-height:60px;display:block;margin-bottom:10px">`)
+    : '';
 
-return `
-  <div class="popup">
-    ${logoHTML}
-    <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
-    <h3>${p.hubID || ''}</h3>
-    
-    <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
-    <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
-    <br>
-    <p>${phoneHTML || '—'}</p><br>
-    <p>${emailHTML}</p>
-    <div class="popup-footer"></div>
-  </div>
-`;
-  }
+  // Conditional hub label
+  const hubLabelHTML = isFC
+    ? ''
+    : `<p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>`;
+
+  return `
+    <div class="popup">
+      ${logoHTML}
+      ${hubLabelHTML}
+      <h3>${p.hubID || ''}</h3>
+      
+      <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
+      <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
+      <br>
+      <p>${phoneHTML || '—'}</p><br>
+      <p>${emailHTML}</p>
+      <div class="popup-footer"></div>
+    </div>
+  `;
+}
+
 
 
   // ====== FILTER + RENDER ======
@@ -325,6 +330,7 @@ return `
   </script>
 </body>
 </html>
+
 
 
 
