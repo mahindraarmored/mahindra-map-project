@@ -187,10 +187,22 @@
 function popupHTML(p, lat, lng){
   const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
   const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
-  const phoneHTML   = p.phone ? `<a href="tel:${p.phone}">${p.phone}</a>` : '';
-  const emailHTML   = p.email ? `<a href="mailto:${p.email}">${p.email}</a>` : '';
-  const dirURL      = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-
+  
+  // Custom WhatsApp Message
+  const whatsappMsg = encodeURIComponent(
+    `Hello, I need support in Region: ${p.region || 'N/A'}\n` +
+    `Support Hub ID: ${p.hubID || 'N/A'}\n` +
+    `Contacting for: (Please specify your requirement)`
+  );
+  
+  // CHANGE 1 (Revised): WhatsApp link with pre-filled message
+  const phoneHTML   = p.phone 
+    ? `<a target="_blank" href="https://wa.me/${p.phone.replace(/\D/g, '')}?text=${whatsappMsg}">Inquire on Whatsapp 💬</a>` 
+    : '';
+  
+  // CHANGE 2: "Send Requirement Mail" replaces the email link
+  const emailHTML   = p.email ? `<a href="mailto:${p.email}">Send Requirement Mail 📧</a>` : '';
+  
   const isFC = p.serviceKey === 'fullCapabilityHub';
 
   // hero image for Full-Capability hubs (full width, “bleeds” to popup edges),
@@ -220,21 +232,15 @@ if (p.logo) {
 
 	<p style="margin-top:10px;"><strong>Region:</strong> ${p.region || '—'} (${p.country || '—'})</p>
 
-
-
     
     <p style="margin-top:10px; text-align: justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
 
     <br>
-    <p>📞 ${phoneHTML || '—'}</p>
-    <p>📧 ${emailHTML || '—'}</p>
-
-    <p style="margin-top:10px; text-align:right;">
-      <a target="_blank" href="${dirURL}">Get Directions ➡️</a>
-    </p>
+    <p>${phoneHTML || '—'}</p>
+    <p>${emailHTML || '—'}</p>
+    
     <div class="popup-footer"></div>
   </div>`;
-
 }
 
 
@@ -365,9 +371,3 @@ if (p.logo) {
   </script>
 </body>
 </html>
-
-
-
-
-
-
