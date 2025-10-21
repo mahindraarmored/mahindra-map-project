@@ -281,11 +281,19 @@
   });
 
   // ====== BOOT ======
-  (async () => {
-    allCenters = await fetchCenters();
-    buildRegionFilter(allCenters);
+  // ====== BOOT ======
+(async () => {
+  allCenters = await fetchCenters();
+  buildRegionFilter(allCenters);
+
+  if (map.loaded()) {
+    applyFiltersAndRender();
+  } else {
     map.on('load', applyFiltersAndRender);
-  })();
+  }
+})();
+
   </script>
 </body>
 </html>
+
