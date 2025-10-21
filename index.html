@@ -173,7 +173,7 @@
 
   const normalizePhone = s => (s||'').replace(/[^\d]/g,''); // keep digits for wa.me
 
-  function popupHTML(p, lat, lng){
+function popupHTML(p, lat, lng){
   const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
   const serviceText = (SERVICE_LABEL[p.serviceKey] || p.serviceKey || '').trim();
 
@@ -190,11 +190,11 @@
   const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
 
   const phoneHTML = waNumber
-    ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon}</a>`
+    ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon} WhatsApp</a>`
     : '';
 
   const emailAddr = p.email || 'support@mahindraarmored.com';
-  const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon}</a>`;
+  const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon} Email</a>`;
 
   const isFC = p.serviceKey === 'fullCapabilityHub';
   const logoHTML = p.logo
@@ -219,13 +219,13 @@
       <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
       <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
       <br>
-      <p style="margin-top:10px; color:#E41837;"><strong>Connect</strong></p>
-      <p>${phoneHTML || '—'}</p>
-      <p>${emailHTML}</p>
-      <div class="popup-footer"></div>
+      
+<p> ${phoneHTML || '—'} | ${emailHTML} </p>
+            <div class="popup-footer"></div>
     </div>
   `;
 }
+
 
 
 
@@ -331,6 +331,7 @@
   </script>
 </body>
 </html>
+
 
 
 
