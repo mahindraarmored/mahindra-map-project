@@ -181,19 +181,27 @@
       : '';
 
     return `
-      <div class="popup" style="font-family:'Georama', sans-serif;">
-        ${logoHTML}
-        <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
-        <h3>${p.hubID || ''}</h3>
-        
-        <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
-        <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
-        <br>
-        <p>${phoneHTML || '—'}</p><br>
-        <p>${emailHTML}</p>
-        <div class="popup-footer"></div>
-      </div>`;
-  }
+     <div class="popup" style="
+  font-family:'Georama', sans-serif;
+  position: relative;
+  background-image: logo.png; /* Replace with your image path */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 200px; /* Adjust size as needed */
+  opacity: 1; /* Keep content readable */
+">
+  ${logoHTML}
+  <p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>
+  <h3>${p.hubID || ''}</h3>
+
+  <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
+  <p style="margin-top:10px;text-align:justify;"><strong>Service Range:</strong> ${serviceText || '—'}</p>
+  <br>
+  <p>${phoneHTML || '—'}</p><br>
+  <p>${emailHTML}</p>
+  <div class="popup-footer"></div>
+</div>
+
 
   // ====== FILTER + RENDER ======
   function applyFiltersAndRender(){
@@ -297,6 +305,7 @@
   </script>
 </body>
 </html>
+
 
 
 
