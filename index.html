@@ -190,12 +190,12 @@ function popupHTML(p, lat, lng){
   
   // Custom WhatsApp Message (Final Version)
   const whatsappMsg = encodeURIComponent(
-    `Good day,\n` + 
-    `I'd like to raise a support request in ${p.region || 'N/A'} region\n\n` +
     `Support Hub ID: ${p.hubID || 'N/A'}\n\n` +
+	`Good day,\n` + 
+    `Raising a support request in ${p.region || 'N/A'}\n\n` +
     `My requirement is*:\n` +
-    `Vehicle Model (*optional*):\n` +
-    `Armouring Level (*optional*):`
+    `Vehicle Model (_optional_):\n` +
+    `Armouring Level (_optional_):`
   );
   
   // Define the WhatsApp icon HTML
@@ -379,6 +379,7 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
 
 
 
