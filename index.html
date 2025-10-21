@@ -195,9 +195,12 @@ function popupHTML(p, lat, lng){
     `Contacting for: (Please specify your requirement)`
   );
   
-  // CHANGE 1 (Revised): WhatsApp link with pre-filled message
+  // Define the WhatsApp icon HTML
+  const whatsappIcon = '<img src="wa.png" alt="WhatsApp Icon" style="width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;">';
+  
+  // CHANGE 1 (Revised): WhatsApp link with pre-filled message and new icon
   const phoneHTML   = p.phone 
-    ? `<a target="_blank" href="https://wa.me/${p.phone.replace(/\D/g, '')}?text=${whatsappMsg}">Inquire on Whatsapp 💬</a>` 
+    ? `<a target="_blank" href="https://wa.me/${p.phone.replace(/\D/g, '')}?text=${whatsappMsg}">Inquire on Whatsapp ${whatsappIcon}</a>` 
     : '';
   
   // CHANGE 2: "Send Requirement Mail" replaces the email link
@@ -371,3 +374,4 @@ if (p.logo) {
   </script>
 </body>
 </html>
+
