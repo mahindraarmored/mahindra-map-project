@@ -107,9 +107,20 @@
 }
 
 .hub-id-container {
-    display: inline-flex;
-    align-items: left; /* Vertically center the code and any icon */
-    margin-left: 8px; /* Space from the 'Hub ID:' label */
+  /* Retain your existing properties */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Assuming you are using the gap from your previous code */
+  
+  /* Add the horizontal line (top border) */
+  border-top: .5px solid #CCCCCC; 
+border-bottom: .5px solid #CCCCCC;
+  
+  /* Add vertical spacing to separate content */
+  padding-top: 10px; /* Space between the line and the Hub ID content */
+  margin-top: 10px;
+padding-bottom: 10px;
+margin-bottom: 10px;  /* Space between the contact buttons and the line */
 }
 
 .hub-id-badge {
@@ -187,7 +198,8 @@ vertical-align: middle;
 .popup .contact-buttons {
   /* you already have display:flex, gap:10px, justify-content:center */
   margin-top: 12px;            /* reduce from 20px for tighter layout */
-  margin-bottom: 10px;         /* add a bit of breathing room below */
+  margin-bottom: 10px;
+padding-bottom:10px;         /* add a bit of breathing room below */
 }
 
 /* --- Hub ID container: align baseline and tidy spacing --- */
@@ -200,8 +212,8 @@ vertical-align: middle;
 
 /* Optional: make the hub-id badge pop a hair more */
 .popup .hub-id-badge {
-  background-color: #f0f3f5;
-  color: #4a5568;
+  background-color: #ffffff;
+  color: #000000;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   padding: 3px 8px;            /* slightly slimmer vertical padding */
@@ -251,15 +263,25 @@ vertical-align: middle;
     APAC: 'APAC → Asia Pacific (Asia + Oceania)'
   };
 
-  const SERVICE_LABEL = {
-    fullCapabilityHub: 'Full-Capability Hub',
+const SERVICE_LABEL = {
+    // 🚨 ISSUE: Missing comma after 'AV Training', and elements need commas
+    // ⬇️ CORRECTED VERSION ⬇️
+    fullCapabilityHub: [
+        'AV Manufacturing',
+        'AV Spares',
+        'AV Training', // <--- COMMA ADDED HERE
+        'Driver Training',
+        '& More'
+    ], // <--- COMMA ADDED HERE
+
     otherServiceLocations: 'Other Service Locations',
+    
     supportCenter: [
-    'Armoured Vehicle Maintenance',
-    'Heavy Duty (HD) Spares',
-    'Technical Support & Consultation'
-  ] // <-- NEW: Array for bullet points
-  };
+        'Armoured Vehicle Maintenance',
+        'Heavy Duty (HD) Spares',
+        'Technical Support & Consultation'
+    ]
+};
 
   // GraphQL: serviceRange -> services
   const QUERY = `
@@ -345,95 +367,152 @@ vertical-align: middle;
   const normalizePhone = s => (s||'').replace(/[^\d]/g,''); // keep digits for wa.me
 
 function popupHTML(p, lat, lng){
-  const regionText  = (REGION_LABEL[p.region] || p.region || '').trim();
-  const serviceData = SERVICE_LABEL[p.serviceKey] || p.serviceKey || ''; // Use serviceData instead of serviceText
-
-  // --- Start of new Service Range rendering logic ---
-  let serviceHTML;
-  if (Array.isArray(serviceData)) {
-    // If it's an array, create an unordered list (bullet points)
-    serviceHTML = `
-      <ul style="padding-left: 20px; margin-top: 5px; list-style-type: disc; color: #4b5563;">
-        ${serviceData.map(item => `<li style="margin-bottom: 4px; line-height: 1.3;">${item}</li>`).join('')}
-      </ul>
-    `;
-  } else {
-    // Otherwise, render as a single paragraph (for 'Full-Capability Hub' etc.)
-    const serviceText = String(serviceData).trim();
-    serviceHTML = `<p style="margin-top:10px;text-align:justify;">${serviceText || '—'}</p>`;
-  }
-  // --- End of new Service Range rendering logic ---
-
-
-  const whatsappMsg = encodeURIComponent(
-    `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\n` +
-    `Good day,\n\n` +
-    `I am contacting regarding:\n`
-  );
-
-  const CENTRAL_WA = '971527118654';
-  const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
-
-  const whatsappIcon = '<img src="wa.png" alt="WhatsApp" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
-  const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
-
-  const phoneHTML = waNumber
-    ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon} WhatsApp</a>`
-    : '';
-
-  const emailAddr = p.email || 'support@mahindraarmored.com';
-  const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon} Email</a>`;
-
   const isFC = p.serviceKey === 'fullCapabilityHub';
+
+  // Helper function to create contact HTML block (can be reused)
+  const createContactHTML = (p) => {
+    const whatsappMsg = encodeURIComponent(
+      `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\n` +
+      `Good day,\n\n` +
+      `I am contacting regarding:\n`
+    );
+
+    const CENTRAL_WA = '971527118654';
+    const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+
+    const whatsappIcon = '<img src="wa.png" alt="WhatsApp" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
+    const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
+
+    const phoneHTML = waNumber
+      ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon} WhatsApp</a>`
+      : '';
+
+    const emailAddr = p.email || 'support@mahindraarmored.com';
+    const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon} Email</a>`;
+
+    return `
+      <div class="contact-buttons">
+        ${phoneHTML}
+        ${emailHTML}
+      </div>
+    `;
+  };
+
+  // Helper function to create Service Range HTML block (can be reused)
+ // Add isFC as an argument so the function knows the hub type
+// Function is defined to accept the 'isFC' flag
+const createServiceHTML = (p, isFC) => {
+    const serviceData = SERVICE_LABEL[p.serviceKey] || p.serviceKey || '';
+
+    // CONDITIONAL HEADING LOGIC:
+    // If isFC is true (Full-Capability Hub), headingHTML is empty ('').
+    // If isFC is false (Regional Support Hub), the heading is included.
+    const headingHTML = isFC
+        ? '' 
+        : '<p><strong>Service Range:</strong></p>'; 
+
+    let serviceHTML;
+    if (Array.isArray(serviceData)) {
+        // If it's an array, create an unordered list (bullet points)
+        serviceHTML = `
+            <ul style="padding-left: 20px; margin-top: 5px; list-style-type: disc; color: #4b5563;">
+                ${serviceData.map(item => `<li style="margin-bottom: 4px; line-height: 1.3;">${item}</li>`).join('')}
+            </ul>
+        `;
+    } else {
+        // Otherwise, render as a single paragraph
+        const serviceText = String(serviceData).trim();
+        serviceHTML = `<p style="margin-top:10px;text-align:justify;">${serviceText || '—'}</p>`;
+    }
+
+    return `
+        <div class="service-range">
+            ${headingHTML}  ${serviceHTML}
+        </div>
+    `;
+};
+// ----------------------------------------------------------------------
+// --- START: Separate HTML for Full-Capability Hub (isFC = true) ---
+// ----------------------------------------------------------------------
+
+  if (isFC) {
+    const logoHTML = p.logo
+      ? `<div style="text-align:center;padding-top:10px;margin-bottom:8px;">
+           <img src="${p.logo}" alt="${p.name} logo" style="max-width:180px;height:auto;display:inline-block">
+         </div>`
+      : '';
+
+    return `
+      <div class="popup full-capability">
+        
+        ${logoHTML}
+<div style="background-color: #FCFCFC; ">
+          <p><strong><span style="color:#E41837;">End-to-End</p><p>Armoured Vehicle Services</span></strong></p>
+        
+
+        ${createServiceHTML(p, isFC)}
+        ${createContactHTML(p)}
+
+        </div>
+        <div class="popup-footer"></div>
+      </div>
+    `;
+  }
+
+// ----------------------------------------------------------------------
+// --- ELSE: HTML for Regional Support Hub (isFC = false) ---
+// ----------------------------------------------------------------------
+
+  else { // Regional Support Hub
+    // 1. Generate logoHTML with the centering wrapper
   const logoHTML = p.logo
-    ? (isFC
-        ? `<div style="text-align:center;padding-top:10px;margin-bottom:8px;">
-             <img src="${p.logo}" alt="${p.name} logo" style="max-width:180px;height:auto;display:inline-block">
+        ? `<div style="text-align: center; padding-top: 10px; margin-bottom: 10px;">
+             <div style="
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               width: 60px;
+               height: 60px;
+               border-radius: 50%;
+               background-color: #E6E6E6; /* Optional: background color for the circle */
+               overflow: hidden;           /* Crucial: hides parts of image that go outside the circle */
+               margin: 0 auto 5px auto;
+             ">
+               <img src="${p.logo}" alt="${p.name} logo" style="
+                 width: 100%;             /* Make image take full width of container */
+                 height: 100%;            /* Make image take full height of container */
+                 object-fit: cover;       /* CRUCIAL: Makes image fill the circle, cropping if necessary */
+                 display: block;
+               ">
+             </div>
            </div>`
-        : `<img src="${p.logo}" alt="${p.name} logo" style="max-width:25px;max-height:60px;display:block;margin-bottom:10px">`)
-    : '';
+        : '';
 
-  // Conditional hub label
-  const hubLabelHTML = isFC
-    ? ''
-    : `<p style="margin-top:10px; color:#E41837;"><strong>Regional Support Hub</strong></p>`;
+    return `
+      <div class="popup regional-support">
+        
+        
+        ${logoHTML}
+        <div style="background-color: #Ffffff; padding-top: 10px;">
+          <p><strong>Regional Support Hub - <span style="color:#E41837;">${p.country || '—'}</span></strong></p>
+        </div>
+        
+         
 
-  // 🚨 IMPORTANT: Updated HTML to use the new serviceHTML variable
-  return `
-    <div class="popup">
-  ${hubLabelHTML}
+        ${createServiceHTML(p, isFC)}
+        ${createContactHTML(p)}
 
-  <div class="logo-country">
-<p><strong>Country:</strong> ${p.country || '—'}</p>    
-<div class="logo-wrapper">
-      ${logoHTML}
-    </div>
-    
-  </div>
-
-  <div class="service-range">
-    <p><strong>Service Range:</strong></p>
-    ${serviceHTML}
-  </div>
-
-  <div class="contact-buttons">
-    ${phoneHTML}
-    ${emailHTML}
-  </div>
-
-  <div class="hub-id-container">
-    <p>
-      <strong>Hub ID:</strong>
-      <span class="hub-id-badge">${p.hubID || ''}</span>
-    </p>
-  </div>
-
-
-            <div class="popup-footer"></div>
-    </div>
-  `;
+        <div style="background-color: #F1F1f1; padding-top: 10px; padding-bottom: 10px; text-align: center;">
+          <p style="margin-bottom: 8px;">Hub Identifer #</p>
+          <p>
+            <strong><span class="hub-id-badge">${p.hubID || ''}</strong>
+          </p>
+        </div>
+        <div class="popup-footer"></div>
+      </div>
+    `;
 }
-
+}
 
 
 
