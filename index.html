@@ -106,6 +106,119 @@
     margin-right: 5px; /* Add a little space between icon and text */
 }
 
+.hub-id-container {
+    display: inline-flex;
+    align-items: left; /* Vertically center the code and any icon */
+    margin-left: 8px; /* Space from the 'Hub ID:' label */
+}
+
+.hub-id-badge {
+    /* The Badge Look */
+    background-color: #f0f3f5; /* Very light, cool background */
+    color: #4a5568; /* Dark, readable text color */
+    border: 1px solid #e2e8f0; /* Subtle border */
+    border-radius: 4px; /* Slight rounding, not a full pill */
+    padding: 4px 8px;
+
+    /* The Code Look */
+    font-size: 0.9em; /* Slightly smaller than main text */
+    font-weight: 500; /* Medium weight */
+    font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace; 
+    /* Use a clear monospace font */
+    letter-spacing: 0.5px; /* Spacing can help with readability of slashes */
+    user-select: all; /* Allows easy highlighting and copying */
+}
+
+.hub-header {
+    /* 1. Turn on Flexbox */
+    display: flex;
+    
+    /* 2. Alignment (Optional but recommended) */
+    align-items: center; 
+vertical-align: middle;
+    /* This centers the logo and label vertically, useful if they have different heights */
+    
+    /* 3. Spacing (Optional) */
+    gap: 10px; 
+    /* Adds a clean 10px space between the logo and the label */
+}
+
+
+/* --- Logo + Country row --- */
+.popup .logo-country {
+  display: flex;
+  align-items: center;         /* vertical centering regardless of logo height */
+  gap: 12px;                   /* space between logo and text */
+  margin: 8px 0 10px;          /* balanced vertical rhythm */
+}
+
+.popup .logo-country .logo-wrapper {
+  flex-shrink: 0;              /* prevent logo squish */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;                /* consistent row height */
+  min-width: 42px;             /* keeps text from jumping left on smaller logos */
+}
+
+/* Ensure any <img> inside ${logoHTML} scales cleanly */
+.popup .logo-country .logo-wrapper img {
+  max-height: 42px;            /* cap height; preserves aspect ratio */
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Country text reset (pairs well with .popup p defaults) */
+.popup .logo-country p {
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* --- Service range block spacing --- */
+.popup .service-range {
+  margin: 10px 0 12px;
+}
+.popup .service-range > p {
+  margin: 0 0 6px;
+}
+
+/* --- Contact buttons: use your existing styles, just tighten spacing --- */
+.popup .contact-buttons {
+  /* you already have display:flex, gap:10px, justify-content:center */
+  margin-top: 12px;            /* reduce from 20px for tighter layout */
+  margin-bottom: 10px;         /* add a bit of breathing room below */
+}
+
+/* --- Hub ID container: align baseline and tidy spacing --- */
+.popup .hub-id-container {
+  display: inline-flex;        /* you already had inline-flex; switch to gap instead of margin-left */
+  align-items: left;
+  gap: 8px;                    /* replaces margin-left on the badge wrapper */
+  margin-top: 6px;
+}
+
+/* Optional: make the hub-id badge pop a hair more */
+.popup .hub-id-badge {
+  background-color: #f0f3f5;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 3px 8px;            /* slightly slimmer vertical padding */
+  font-size: 0.9em;
+  font-weight: 500;
+  font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  user-select: all;
+}
+
+/* --- Mapbox footer overlap safety ---
+   You have an absolutely-positioned footer (height: 3px).
+   Give the popup a tiny bottom padding so content never sits under it.
+*/
+.mapboxgl-popup-content {
+  padding-bottom: 12px;        /* was 10px; small bump to guarantee clearance */
+}
 
 
   </style>
@@ -288,19 +401,34 @@ function popupHTML(p, lat, lng){
   // 🚨 IMPORTANT: Updated HTML to use the new serviceHTML variable
   return `
     <div class="popup">
+  ${hubLabelHTML}
+
+  <div class="logo-country">
+<p><strong>Country:</strong> ${p.country || '—'}</p>    
+<div class="logo-wrapper">
       ${logoHTML}
-      ${hubLabelHTML}
-      <h3>${p.hubID || ''}</h3>
-      
-      <p style="margin-top:10px;"><strong>Country:</strong> ${p.country || '—'}</p>
-      <p style="margin-top:10px;"><strong>Service Range:</strong></p>
-      ${serviceHTML}
-      
-      
-<div class="contact-buttons">
-  ${phoneHTML}
-  ${emailHTML}
-</div>
+    </div>
+    
+  </div>
+
+  <div class="service-range">
+    <p><strong>Service Range:</strong></p>
+    ${serviceHTML}
+  </div>
+
+  <div class="contact-buttons">
+    ${phoneHTML}
+    ${emailHTML}
+  </div>
+
+  <div class="hub-id-container">
+    <p>
+      <strong>Hub ID:</strong>
+      <span class="hub-id-badge">${p.hubID || ''}</span>
+    </p>
+  </div>
+
+
             <div class="popup-footer"></div>
     </div>
   `;
