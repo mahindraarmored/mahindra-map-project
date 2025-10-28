@@ -10,17 +10,25 @@
   <style>
     html,body,#map{height:100%;margin:0}
     body{font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    .panel{
-      position:absolute;top:10px;left:10px;z-index:2;background:#fff;
-      padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
-      font-family: 'Georama', sans-serif;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;max-width:450px;
-    }
+    /* 🛠️ MODIFIED: Changes panel from horizontal to vertical, removes max-width */
+.panel{
+  position:absolute;top:10px;left:10px;z-index:2;background:transparent;
+  padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
+  font-family: 'Georama', sans-serif;
+  
+  /* NEW LAYOUT PROPERTIES */
+  display: flex;
+  flex-direction: column; 
+  gap: 15px; /* Space between the filter group and locate button group */
+  max-width: fit-content; /* Allows it to shrink to the width of the pills */
+  width: 100%;
+  flex-wrap: nowrap;
+}
     .panel label{display:flex;gap:6px;align-items:center}
     .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
     .panel button{cursor:pointer}
     .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
-    .legend-item.red{background-color:#e41837;border:1px solid #e41837}
+   .legend-item.red{background-color:#e41837;border:1px solid #e41837}
     .legend-item.white{background-color:#ffffff;border:1px solid #e41837}
     .mapboxgl-popup-content{
   padding: 10px 10px 10px 10px; /* Reduced bottom padding to 0 */
@@ -38,6 +46,7 @@
     border-radius: 0 0 10px 10px;
 }
     .popup {
+
       position: relative;
       font-family: 'Georama', sans-serif;
     }
@@ -231,27 +240,138 @@ padding-bottom:10px;         /* add a bit of breathing room below */
 .mapboxgl-popup-content {
   padding-bottom: 12px;        /* was 10px; small bump to guarantee clearance */
 }
+#legend-footer{
+      position:absolute;
+      bottom:10px; /* Distance from the bottom edge */
+      left:50%;
+      transform:translateX(-50%); /* Center horizontally */
+      z-index:2;
+      background:transparent;
+      padding:10px 15px;
+      border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.12);
+      font-family: 'Georama', sans-serif;
+      /* Max-width added to keep it tidy */
+      max-width: fit-content; 
+    }
+
+.filter-pill {
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px; /* High radius for pill shape */
+    background: #f8f9fa; /* Light background for non-selected */
+    color: #4b5563;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Prevent wrapping inside the pill */
+font-family: 'Georama', sans-serif;
+}
+
+.filter-pill:hover:not(.active) {
+    background: #e41837;
+    border-color: #e41837;
+color: #ffffff;
+font-family: 'Georama', sans-serif;
+}
+
+.filter-pill.active {
+    background: #e41837; /* Mahindra Red */
+    color: #ffffff;
+    border-color: #e41837;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+font-family: 'Georama', sans-serif;
+}
+
+
+/* --- New Panel Layout and Structure Rules --- */
+.panel-group {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0; 
+}
+
+.panel-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.panel-label {
+    font-weight: 600; 
+    color: #ffffff;
+    font-size: 15px;
+text-align: center;
+font-family: 'Georama', sans-serif;
+}
+
+#regionFilterPills {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 6px; 
+}
+
+/* --- Branding for Action Button (Find Near Me) --- */
+
+#locateMe {
+    /* Resets and overrides default .panel button styles */
+    
+    /* 🛠️ MODIFIED: Light gray background */
+    background-color: #f0f0f0; 
+    
+    /* 🛠️ MODIFIED: Red text color */
+    color:  #000000; 
+    
+    /* 🛠️ MODIFIED: Subtle border */
+    border: 1px solid #dcdcdc; 
+    
+    font-weight: 500;
+    padding: 8px 12px; 
+    border-radius: 8px; 
+    /* 🛠️ MODIFIED: Use a very subtle, light shadow */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+    
+    transition: all 0.2s ease;
+font-family: 'Georama', sans-serif;
+}
+
+#locateMe:hover {
+    /* Slightly darker gray on hover */
+    background-color: #e5e5e5; 
+    /* No change to text/border color */
+    border-color: #E000000; 
+    /* Keep existing hover shadow or remove it */
+color: #E41837;   
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+font-family: 'Georama', sans-serif;
+}
 
 
   </style>
 </head>
 <body>
+
+
   <div class="panel" aria-label="Map controls">
-    <label>Region:
-      <select id="regionFilter" aria-label="Filter by region">
-        <option value="">All</option>
-      </select>
-    </label>
-    <button id="locateMe" aria-label="Use my location">📌 Find near me</button>
-    <button id="refreshBtn" aria-label="Refresh data">⟳ Refresh</button>
-   <div style="
+      <div class="panel-group filter-controls">
+          <div class="panel-label">Filter by Region</div>
+          <div id="regionFilterPills">
+              </div>
+      </div>
+
+      <div class="panel-group action-controls">
+          <button id="locateMe" aria-label="Use my location">📍 MEVA Regional Hubs near me</button>
+      </div>
+  </div>
+
+  <div id="legend-footer" role="contentinfo" aria-label="Map legend">
+    <div style="
         display:flex; 
-        gap:10px; 
-        flex-wrap:wrap; 
-        width:100%;
-        padding-top:10px; 
-        margin-top:10px; 
-        border-top:1px solid #e5e7eb; /* Light gray line separator */
+        gap:15px; /* Increased gap for better spacing */
+        align-items: center;
+        justify-content: center; /* Center the content */
     ">
       <div><span class="k legend-item red"></span> Armoured Vehicle(AV) Manufacturing Facility</div>
       <div><span class="k legend-item white"></span> Regional Support Hubs for AV's</div>
@@ -266,22 +386,19 @@ padding-bottom:10px;         /* add a bit of breathing room below */
   const HYGRAPH_ENDPOINT = 'https://ap-south-1.cdn.hygraph.com/content/cmfpk332g005s08uylh0ezd8a/master';
 
   const REGION_LABEL = {
-    AMER: 'AMER → North & Latin America',
-    EMEA: 'EMEA → Europe, Middle East, Africa',
-    APAC: 'APAC → Asia Pacific (Asia + Oceania)'
+    AMER: '🌎 AMER: North & Latin America',
+    EMEA: '🌍 EMEA: Europe, Middle East, Africa',
+    APAC: '🌏 APAC: Asia Pacific (Asia + Oceania)'
   };
 
 const SERVICE_LABEL = {
-    // 🚨 ISSUE: Missing comma after 'AV Training', and elements need commas
-    // ⬇️ CORRECTED VERSION ⬇️
     fullCapabilityHub: [
       'AV Manufacturing',  
       'AV After Sales',
         'AV Service Support',
         'AV Spares Support',
       'AV Disposals'
-    ], // <--- COMMA ADDED HERE
-
+    ],
     otherServiceLocations: 'Other Service Locations',
     
     supportCenter: [
@@ -314,13 +431,15 @@ const SERVICE_LABEL = {
   map.addControl(new mapboxgl.NavigationControl());
 
   // ====== DOM ======
-  const regionSelect  = document.getElementById('regionFilter');
+  const regionPills   = document.getElementById('regionFilterPills')
   const locateBtn     = document.getElementById('locateMe');
-  const refreshBtn    = document.getElementById('refreshBtn');
+  
+let currentRegionFilter = '';
 
   // ====== STATE ======
   let allCenters = [];
-  let currentGeo = null;
+let currentGeo = null;
+let geoMarker = null;
 
   // ====== FETCH ======
   async function fetchCenters(){
@@ -343,14 +462,36 @@ const SERVICE_LABEL = {
     }));
   }
 
-  // ====== FILTER UI BUILD ======
-  function buildRegionFilter(list){
+function buildRegionPills(list){
     const regions = [...new Set(list.map(c => c.region).filter(Boolean))]
       .sort((a,b) => (REGION_LABEL[a]||a).localeCompare(REGION_LABEL[b]||b));
-    regionSelect.innerHTML = '<option value="">All</option>' +
-      regions.map(r => `<option value="${r}">${REGION_LABEL[r] || r}</option>`).join('');
-  }
+    
+    // Start with the 'Global' button (value is "")
+    let html = `<button class="filter-pill active" data-region="">🌐 Global</button>`;
+    
+    // Add buttons for each unique region
+    html += regions.map(r => 
+        // 🛠️ CORRECTED LINE: Use REGION_LABEL[r] for the display text
+        `<button class="filter-pill" data-region="${r}">${REGION_LABEL[r] || r}</button>`
+    ).join('');
 
+    regionPills.innerHTML = html;
+
+    // Add click listener to the container
+    regionPills.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn || btn.classList.contains('active')) return;
+
+        // Set the new filter value
+        currentRegionFilter = btn.getAttribute('data-region');
+        
+        // Update active state
+        document.querySelectorAll('#regionFilterPills .filter-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        applyFiltersAndRender();
+    });
+}
   // ====== HELPERS ======
   function toGeoJSON(list){
     return {
@@ -486,6 +627,7 @@ const createServiceHTML = (p, isFC) => {
                background-color: #E6E6E6; /* Optional: background color for the circle */
                overflow: hidden;           /* Crucial: hides parts of image that go outside the circle */
                margin: 0 auto 5px auto;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
              ">
                <img src="${p.logo}" alt="${p.name} logo" style="
                  width: 100%;             /* Make image take full width of container */
@@ -502,7 +644,7 @@ const createServiceHTML = (p, isFC) => {
         
         
         ${logoHTML}
-        <div style="background-color: #Ffffff; padding-top: 10px;">
+        <div style="background-color: #Ffffff; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);">
           <p><strong>Regional Support Hub - <span style="color:#E41837;">${p.country || '—'}</span></strong></p>
         </div>
         
@@ -511,8 +653,8 @@ const createServiceHTML = (p, isFC) => {
         ${createServiceHTML(p, isFC)}
         ${createContactHTML(p)}
 
-        <div style="background-color: #F1F1f1; padding-top: 10px; padding-bottom: 10px; text-align: center;">
-          <p style="margin-bottom: 8px;">HUB ID</p>
+        <div style="background-color: #F1F1f1; padding-top: 10px; padding-bottom: 10px; text-align: center;box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);">
+          <p style="margin-bottom: 8px;"><strong>HUB ID</strong></p>
           <p>
             <strong><span class="hub-id-badge">${p.hubID || ''}</strong>
           </p>
@@ -526,8 +668,15 @@ const createServiceHTML = (p, isFC) => {
 
 
   // ====== FILTER + RENDER ======
-  function applyFiltersAndRender(){
-    const r = regionSelect.value;
+function applyFiltersAndRender(){
+    // Remove the old user location marker if it exists (THIS IS CORRECT)
+    if (geoMarker) {
+        geoMarker.remove();
+        geoMarker = null; // Clear the reference
+    }
+
+    // Use a single, correct declaration for filtering
+    const r = currentRegionFilter;
     const filtered = allCenters.filter(c => !r || c.region === r);
 
     currentGeo = toGeoJSON(filtered);
@@ -578,70 +727,62 @@ const createServiceHTML = (p, isFC) => {
     } else {
       map.flyTo({ center:[20,10], zoom:2 });
     }
-  }
+}
+  // ❌ REMOVED: // ====== REFRESH LOGIC ====== function is deleted as the button is hidden.
 
-  // ====== REFRESH LOGIC ======
-  async function refreshData({ rebuildRegion=false } = {}){
-    const prevRegion = regionSelect.value;
-    allCenters = await fetchCenters();
-    if (rebuildRegion) buildRegionFilter(allCenters);
-    regionSelect.value = prevRegion || '';
+
+// ====== EVENTS ======
+  
+  locateBtn.onclick = () => {
+    
+    // 1. Reset the filter state to show all regions (Global)
+    currentRegionFilter = '';
+
+    // 2. Visually reset the pills: Deactivate all, Activate 'Global'
+    document.querySelectorAll('#regionFilterPills .filter-pill').forEach(b => b.classList.remove('active'));
+    const globalPill = document.querySelector('#regionFilterPills [data-region=""]');
+    if (globalPill) {
+        globalPill.classList.add('active');
+    }
+
+    // 3. Re-render the map to ensure all centers are displayed globally
     applyFiltersAndRender();
-  }
 
-  // ====== EVENTS ======
-  regionSelect.onchange = applyFiltersAndRender;
+    if (!navigator.geolocation) return alert('Geolocation not supported');
+    
+    // Remove existing marker before finding location again
+    if (geoMarker) {
+        geoMarker.remove();
+        geoMarker = null;
+    }
 
-  locateBtn.onclick = () => {
-    if (!navigator.geolocation) return alert('Geolocation not supported');
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const { latitude, longitude } = pos.coords;
-      map.flyTo({ center:[longitude, latitude], zoom:6 });
-      new mapboxgl.Marker({color:'#1f2937'}).setLngLat([longitude, latitude]).addTo(map);
-    }, err => {
-      console.warn(err);
-      alert('Could not get your location.');
-    }, { enableHighAccuracy:true, timeout:10000 });
-  };
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const { latitude, longitude } = pos.coords;
+      map.flyTo({ center:[longitude, latitude], zoom:6 });
+        
+      // Assign the new marker to geoMarker
+      geoMarker = new mapboxgl.Marker({color:'#1f2937'})
+          .setLngLat([longitude, latitude])
+          .addTo(map);
 
-  refreshBtn.onclick = () => refreshData({ rebuildRegion:true });
+    }, err => {
+      console.warn(err);
+      alert('Could not get your location.');
+    }, { enableHighAccuracy:true, timeout:10000 });
+  };
 
-  let refreshTimer = setInterval(() => refreshData(), 60000);
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshData();
-  });
-
-  // ====== BOOT ======
-  // ====== BOOT ======
+ // ====== BOOT ======
 (async () => {
-  allCenters = await fetchCenters();
-  buildRegionFilter(allCenters);
+  allCenters = await fetchCenters();
+  buildRegionPills(allCenters); // ✅ Call the function that builds the buttons
 
-  if (map.loaded()) {
-    applyFiltersAndRender();
-  } else {
-    map.on('load', applyFiltersAndRender);
-  }
+  if (map.loaded()) {
+    applyFiltersAndRender();
+  } else {
+    map.on('load', applyFiltersAndRender);
+  }
 })();
 
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
