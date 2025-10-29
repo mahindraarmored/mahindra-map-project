@@ -6,11 +6,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Georama:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    html,body,#map{height:100%;margin:0}
-    body{font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    /* 🛠️ MODIFIED: Changes panel from horizontal to vertical, removes max-width */
+<style>
+  html,body,#map{height:100%;margin:0}
+  body{font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  /* 🛠️ MODIFIED: Changes panel from horizontal to vertical, removes max-width */
 .panel{
   position:absolute;top:10px;left:10px;z-index:2;background:transparent;
   padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12);
@@ -20,23 +23,24 @@
   display: flex;
   flex-direction: column; 
   gap: 15px; /* Space between the filter group and locate button group */
-  max-width: fit-content; /* Allows it to shrink to the width of the pills */
-  width: 100%;
+  max-width: fit-content; 
+  width: 10vw; /* KEPT AS REQUESTED */
+  font-size: 0.6vw;
   flex-wrap: nowrap;
 }
-    .panel label{display:flex;gap:6px;align-items:center}
-    .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
-    .panel button{cursor:pointer}
-    .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
-   .legend-item.red{background-color:#e41837;border:1px solid #e41837}
-    .legend-item.white{background-color:#ffffff;border:1px solid #e41837}
-    .mapboxgl-popup-content{
+  .panel label{display:flex;gap:6px;align-items:center}
+  .panel select,.panel button{padding:6px 8px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+  .panel button{cursor:pointer}
+  .k{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}
+  .legend-item.red{background-color:#e41837;border:1px solid #e41837}
+  .legend-item.white{background-color:#ffffff;border:1px solid #e41837}
+  .mapboxgl-popup-content{
   padding: 10px 10px 10px 10px; /* Reduced bottom padding to 0 */
   max-width: min(90vw,420px);
 }
-    .popup h3{margin:0 0 4px;font-size:clamp(14px,1.5vw,18px)}
-    .popup p{margin:0;font-size:clamp(12px,1.3vw,14px);line-height:1.35;overflow-wrap:anywhere}
-    .popup-footer{
+  .popup h3{margin:0 0 4px;font-size:clamp(14px,1.5vw,18px)}
+  .popup p{margin:0;font-size:clamp(12px,1.3vw,14px);line-height:1.35;overflow-wrap:anywhere}
+  .popup-footer{
     position: absolute;
     bottom: 0; /* Use a negative value to compensate for the removed padding and the Mapbox wrapper */
     left: 0;
@@ -45,13 +49,13 @@
     background: #ffffff;
     border-radius: 0 0 10px 10px;
 }
-    .popup {
+  .popup {
 
-      position: relative;
-      font-family: 'Georama', sans-serif;
-    }
+    position: relative;
+    font-family: 'Georama', sans-serif;
+  }
 
-  .popup::before {
+.popup::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -68,10 +72,10 @@
   transform-origin: center;
 }
 
-    .popup * {
-      position: relative;
-      z-index: 1;
-    }
+  .popup * {
+    position: relative;
+    z-index: 1;
+  }
 
 
 /* Container to hold the buttons, using flexbox for alignment */
@@ -167,23 +171,23 @@ vertical-align: middle;
 /* --- Logo + Country row --- */
 .popup .logo-country {
   display: flex;
-  align-items: center;         /* vertical centering regardless of logo height */
-  gap: 12px;                   /* space between logo and text */
-  margin: 8px 0 10px;          /* balanced vertical rhythm */
+  align-items: center;            /* vertical centering regardless of logo height */
+  gap: 12px;                      /* space between logo and text */
+  margin: 8px 0 10px;              /* balanced vertical rhythm */
 }
 
 .popup .logo-country .logo-wrapper {
-  flex-shrink: 0;              /* prevent logo squish */
+  flex-shrink: 0;                 /* prevent logo squish */
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 42px;                /* consistent row height */
-  min-width: 42px;             /* keeps text from jumping left on smaller logos */
+  height: 42px;                   /* consistent row height */
+  min-width: 42px;                 /* keeps text from jumping left on smaller logos */
 }
 
 /* Ensure any <img> inside ${logoHTML} scales cleanly */
 .popup .logo-country .logo-wrapper img {
-  max-height: 42px;            /* cap height; preserves aspect ratio */
+  max-height: 42px;               /* cap height; preserves aspect ratio */
   width: auto;
   display: block;
   object-fit: contain;
@@ -206,16 +210,16 @@ vertical-align: middle;
 /* --- Contact buttons: use your existing styles, just tighten spacing --- */
 .popup .contact-buttons {
   /* you already have display:flex, gap:10px, justify-content:center */
-  margin-top: 12px;            /* reduce from 20px for tighter layout */
+  margin-top: 12px;               /* reduce from 20px for tighter layout */
   margin-bottom: 10px;
-padding-bottom:10px;         /* add a bit of breathing room below */
+padding-bottom:10px;             /* add a bit of breathing room below */
 }
 
 /* --- Hub ID container: align baseline and tidy spacing --- */
 .popup .hub-id-container {
-  display: inline-flex;        /* you already had inline-flex; switch to gap instead of margin-left */
+  display: inline-flex;          /* you already had inline-flex; switch to gap instead of margin-left */
   align-items: left;
-  gap: 8px;                    /* replaces margin-left on the badge wrapper */
+  gap: 8px;                      /* replaces margin-left on the badge wrapper */
   margin-top: 6px;
 }
 
@@ -225,7 +229,7 @@ padding-bottom:10px;         /* add a bit of breathing room below */
   color: #000000;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
-  padding: 3px 8px;            /* slightly slimmer vertical padding */
+  padding: 3px 8px;              /* slightly slimmer vertical padding */
   font-size: 0.9em;
   font-weight: 500;
   font-family: 'SFMono-Regular', 'Consolas', 'Courier New', monospace;
@@ -234,11 +238,11 @@ padding-bottom:10px;         /* add a bit of breathing room below */
 }
 
 /* --- Mapbox footer overlap safety ---
-   You have an absolutely-positioned footer (height: 3px).
-   Give the popup a tiny bottom padding so content never sits under it.
+    You have an absolutely-positioned footer (height: 3px).
+    Give the popup a tiny bottom padding so content never sits under it.
 */
 .mapboxgl-popup-content {
-  padding-bottom: 12px;        /* was 10px; small bump to guarantee clearance */
+  padding-bottom: 12px;           /* was 10px; small bump to guarantee clearance */
 }
 #legend-footer{
       position:absolute;
@@ -256,16 +260,21 @@ padding-bottom:10px;         /* add a bit of breathing room below */
     }
 
 .filter-pill {
-    padding: 6px 10px;
+    /* 💥 MODIFIED: Increased padding and added width/box-sizing for full-width vertical stacking */
+    padding: 0.6vw 0.8vw; /* New responsive padding for cleaner list item look */
+    width: 100%; /* Forces the pill to span the full 10vw width */
+    box-sizing: border-box; /* Ensures padding/border are included in the 100% width */
+    text-align: left; /* Aligns text neatly to the left */
+
     border: 1px solid #e5e7eb;
     border-radius: 20px; /* High radius for pill shape */
     background: #f8f9fa; /* Light background for non-selected */
     color: #4b5563;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.6vw; 
     font-weight: 500;
     transition: all 0.2s ease;
-    white-space: nowrap; /* Prevent wrapping inside the pill */
+    /* white-space: nowrap; is now unnecessary and removed by not including it here */
 font-family: 'Georama', sans-serif;
 }
 
@@ -302,15 +311,18 @@ font-family: 'Georama', sans-serif;
 .panel-label {
     font-weight: 600; 
     color: #ffffff;
-    font-size: 15px;
+    font-size: 0.6vw; /* This is correct for consistency */
 text-align: center;
 font-family: 'Georama', sans-serif;
 }
 
 #regionFilterPills {
+    /* 💥 MODIFIED: Forces vertical stacking of pills */
     display: flex;
-    flex-wrap: wrap; 
-    gap: 6px; 
+    flex-direction: column; /* FORCES vertical stacking */
+    flex-wrap: nowrap;
+    /* Keep gap small and responsive */
+    gap: 0.4vw; 
 }
 
 /* --- Branding for Action Button (Find Near Me) --- */
@@ -335,6 +347,8 @@ font-family: 'Georama', sans-serif;
     
     transition: all 0.2s ease;
 font-family: 'Georama', sans-serif;
+/* ADDED: Explicitly set font-size to 0.8vw for completeness */
+font-size: 0.6vw;
 }
 
 #locateMe:hover {
@@ -343,7 +357,7 @@ font-family: 'Georama', sans-serif;
     /* No change to text/border color */
     border-color: #E000000; 
     /* Keep existing hover shadow or remove it */
-color: #E41837;   
+color: #E41837;    
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 font-family: 'Georama', sans-serif;
 }
@@ -354,12 +368,19 @@ font-family: 'Georama', sans-serif;
 <body>
 
 
-  <div class="panel" aria-label="Map controls">
+ <div class="panel" aria-label="Map controls">
+
+<div id="geocoder-container" class="panel-group filter-controls">
+         <div class="panel-label">Search Country</div> 
+          </div>
+
       <div class="panel-group filter-controls">
           <div class="panel-label">Filter by Region</div>
           <div id="regionFilterPills">
               </div>
       </div>
+      
+      
 
       <div class="panel-group action-controls">
           <button id="locateMe" aria-label="Use my location">📍 MEVA Regional Hubs near me</button>
@@ -369,12 +390,19 @@ font-family: 'Georama', sans-serif;
   <div id="legend-footer" role="contentinfo" aria-label="Map legend">
     <div style="
         display:flex; 
-        gap:15px; /* Increased gap for better spacing */
+        gap:20px; 
         align-items: center;
-        justify-content: center; /* Center the content */
+        justify-content: center;
+        font-size: 0.6vw;
     ">
-      <div><span class="k legend-item red"></span> Armoured Vehicle(AV) Manufacturing Facility</div>
-      <div><span class="k legend-item white"></span> Regional Support Hubs for AV's</div>
+      <div style="display:flex; align-items:center;">
+        <img src="manufacturing.png" alt="Manufacturing Icon" style="width:16px; height:16px; margin-right:8px; vertical-align:middle;"> 
+        Armoured Vehicle(AV) Manufacturing Facility
+      </div>
+      <div style="display:flex; align-items:center;">
+        <img src="support.png" alt="Support Icon" style="width:16px; height:16px; margin-right:8px; vertical-align:middle;"> 
+        Regional Support Hubs for AV's
+      </div>
     </div>
   </div>
 
@@ -393,19 +421,17 @@ font-family: 'Georama', sans-serif;
 
 const SERVICE_LABEL = {
     fullCapabilityHub: [
-      'AV Manufacturing',  
-      'AV After Sales',
-        'AV Service Support',
-        'AV Spares Support',
-      'AV Disposals'
+      '⚙️ AV Manufacturing',  
+      '🧰 AV After Sales',
+                '🔩 AV Spares Support',
+      '♻️ AV Disposals'
     ],
     otherServiceLocations: 'Other Service Locations',
     
     supportCenter: [
-        'AV After Sales',
-        'AV Service Support',
-        'AV Spares Support',
-      'AV Disposals'
+         '🧰 AV Service Support',
+        '🔩 AV Spares Support',
+      '♻️ AV Disposals'
     ]
 };
 
@@ -441,6 +467,58 @@ let currentRegionFilter = '';
 let currentGeo = null;
 let geoMarker = null;
 
+
+// 🎨 NEW CODE: Icon Mapping and Loading
+// ====== ICON LOADING ======
+const ICON_MAP = {
+  fullCapabilityHub: 'manufacturing-icon', // Icon ID for Manufacturing Facility
+  supportCenter: 'support-icon'           // Icon ID for Regional Hub
+};
+
+// 💡 PASTE YOUR BASE64 STRINGS HERE 💡
+// REPLACE THE PLACEHOLDERS BELOW with the actual Base64 strings you generated
+const MANUFACTURING_BASE64 = "data:image/png;base64,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"; 
+const SUPPORT_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD8AAAA/CAYAAABXXxDfAAAACXBIWXMAAC4jAAAuIwF4pT92AAAGQ0lEQVRoge2aWWxVRRjH/zPnlHt6e25bSrEtoCyVQkEtCIQailRjRA3xhaAsJqBUDMYlQCQuKIXwokFAQlzYLAYDKiYY0PBiAC3gimVNW6q2iF2pXe65vduZGR/ac7mFil3mnEvS/p7OzD35vv9/ZnoyM1+JEAL9FRprAbFEdSJJ696iPNZ4dT5rqJ8ExnTe5sshIIBCfTQ+voImJlaow+8o8Ty1ZIMTeiyIncu+ZW9RXrji0prg+bOzWW0NQABCSHtiQq61CUBA4JoyzacOG3FASUtbqy9cUmWbsA5sM9/49oYi/08/LGa1Ne2Jos1e3+4wb7XjssYZgybc81biCys32yKuA+nLvvnjnSODF89/5S/+LifabE8IXyrTeU31JhH0e5JWvbFetkYL6eaDZ89823aqOLM3pqPhhoHgiePrWkGQuOp1WwZA6te+/s3XjrSdLM6UFY8bBgInj6/zvr95hayY0Ugz/88H2wraThXPlhXPQhgGwhfPrfft3zNSdmxp5oMXL2zgXq+scJ0wK8p1Xl+3TnZcKeabdu9Y4//xVJqMWP9F+FLp3Lb9n0idfSnmg2Wlj3Q7oe5B8kuroM9b0KMcZkW5Lvz+5T0WdxOkfO251zupO+95nliIpGeWgSbo4D4DbUcOQ/iMbudh9bXdytNd+jzzzXt254Wv/JVws3e0yVMw7MAhDH5xJWiC3p44QUfikmd7lEsEAum9V3ojfZ55osVPNWuqu9zMqBnDkLpmHbTJUzr1c58B44t9aC3a0aNNkGjz5fRVbyd9MoNZUI8HSfMXIXnpczf85jtyGM1bN7Uv977tg/qMdPP6nMcxZMUroLreqT9YchpNWzciXHEJQO+2vbKRZj5+ylQMWbkag8Zmdeo3a2vQ9N5G+L8/jt7u9S2IGlfXV53R9Nl80pMLtrjGj9+s5Uzu1M8NA62ffQrv5/vADa+cmR40qLbvQa4hZebV9IwgAJfVNr4+hOZdH8Gs7fpD2FuUtPRiacEgyXy4uvpnNS09L3D6VzTt+BCB336JnNNloaRlgA5J3S8voqxNTkvz8qbt759r2rU9cikhG3V05hn3vEVSZ17K9jYh/8HzrLFxj4xYXUF0HeqoMdtkx5V2qlPTM9a6JkyskRUvGtd9M79MWLxsp+y40swnP11Qpd2dU6AOHyH1XBuXPbFcGTZilcyYFlJvcoasXP2NO2/mfFkDEJc9sdw1fcbDCQsW23KTa8vtbeOmdx4LnT+3M1h6IaPL29rr29fd3oIA8TMfOKHembXIzits266uW4p2jQxfufxusOT03MjBpxvmtWm5dXFjxxV5li5/1RZhUdhatADaqzXh6r8LeOPV+1lD3ehOe/sO867J94ImJp9QR9xenFjwvO2mLWw3b1H+x+/5SjBwVGttAQCYoXBTMBQcDBA0JHgwIzfX8ZOOI7U6C+bS4BuqAQD8fn+r4TUGO5n/emJWpRVCxLxCHDMBqqqmxCq3RcxHP5YMmO+vDJjvrwyY768MmO+vxHJ7Gx+r3BYxM885j3m9amDZ91cGzPdXnDSv//8rzuKk+cudWgLBqNYZB3VEcMx81pjMswCu1fMIWNTPhU7piMbpv/nCLvqqZuTmHnRYBwCHzWeNyaxE9Oy3U+ikhmicMj8KwHgA+Ym6p0QIASGEQgipmz51aiVjLJ9zniuEGOWQHgA23dszxgpN08x3uVyzrD7OOVpaWpCakoKrVxtgeL3abalDNZ/Pd1RRFFBKQSmFoigIh8OIi4uropSWUEoPEkKK7NAptWLDOT8mhJhlmiYopQgEAuiYZQghEAgEwDlHU3MzLpaW4q7sbLjdbng8HlgDYJomVFWFpmngnFuD0qIoyhwAt97/5ACAEEInhMwKh8NgjCEUCoExBsbaP+qMMdTX18Pv96OsrAx/VlZiaEoKUlNT4Xa7wRiLzLwQAqFQKPIMIAnAo5BsXurMM8a2cM5fZozBNE0IIcA5B+cchJDIM2MsshpUVQWlFKqqghACIURkEKzVoChKFaX0IQAV0sTCvkLlEtM081VVHWWa5ixrBTDG4Ha7AQBerxeUUhBCQAiJPGuahlAoVKUoSiWl9BiltNAOgYCDVdoOkqPzCSGi6/XNTgoBnDd/SzFwquuv/AsIF2vISgFYowAAAABJRU5ErkJggg==";
+
+
+// Function to load all necessary icons before the map layer is created
+function loadMapIcons() {
+    return new Promise((resolve, reject) => {
+        const iconsToLoad = [
+            { path: MANUFACTURING_BASE64, id: ICON_MAP.fullCapabilityHub },
+            { path: SUPPORT_BASE64, id: ICON_MAP.supportCenter }
+        ];
+
+        let loadedCount = 0;
+        const totalIcons = iconsToLoad.length;
+
+        if (totalIcons === 0) {
+            resolve();
+            return;
+        }
+
+        iconsToLoad.forEach(icon => {
+            // Note: The map.loadImage now accepts the Base64 string directly
+            map.loadImage(icon.path, (error, image) => {
+                if (error) {
+                    console.error(`Error loading icon ${icon.id}:`, error);
+                } else {
+                    if (!map.hasImage(icon.id)) {
+                        map.addImage(icon.id, image);
+                    }
+                }
+                loadedCount++;
+                if (loadedCount === totalIcons) {
+                    resolve();
+                }
+            });
+        });
+    });
+}
+// --------------------------
+// --------------------------
+
+
   // ====== FETCH ======
   async function fetchCenters(){
     const res = await fetch(HYGRAPH_ENDPOINT, {
@@ -463,8 +541,12 @@ let geoMarker = null;
   }
 
 function buildRegionPills(list){
+    // 1. Define the custom order for the region codes (AMER, EMEA, APAC)
+    const CUSTOM_REGION_ORDER = ['AMER', 'EMEA', 'APAC'];
+
     const regions = [...new Set(list.map(c => c.region).filter(Boolean))]
-      .sort((a,b) => (REGION_LABEL[a]||a).localeCompare(REGION_LABEL[b]||b));
+      // 2. Use the custom order to sort the regions
+      .sort((a, b) => CUSTOM_REGION_ORDER.indexOf(a) - CUSTOM_REGION_ORDER.indexOf(b));
     
     // Start with the 'Global' button (value is "")
     let html = `<button class="filter-pill active" data-region="">🌐 Global</button>`;
@@ -586,11 +668,31 @@ const createServiceHTML = (p, isFC) => {
 // ----------------------------------------------------------------------
 
   if (isFC) {
-    const logoHTML = p.logo
-      ? `<div style="text-align:center;padding-top:10px;margin-bottom:8px;">
-           <img src="${p.logo}" alt="${p.name} logo" style="max-width:180px;height:auto;display:inline-block">
-         </div>`
-      : '';
+  const logoHTML = p.logo
+  ? `<div style="text-align: center; padding-top: 10px; margin-bottom: 10px;">
+       <div style="
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         width: 60px;
+         height: 60px;
+         border-radius: 50%;
+         background-color: #E6E6E6;
+         overflow: hidden;
+         margin: 0 auto 5px auto;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+       ">
+         <img src="${p.logo}" alt="${p.name} logo" style="
+           width: 100%;
+           height: 100%;
+           object-fit: contain; /* 🔹 ensures full logo visible */
+           object-position: center; /* 🔹 centers the logo */
+           display: block;
+         ">
+       </div>
+     </div>`
+  : '';
+
 
     return `
       <div class="popup full-capability">
@@ -666,7 +768,6 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 
-
   // ====== FILTER + RENDER ======
 function applyFiltersAndRender(){
     // Remove the old user location marker if it exists (THIS IS CORRECT)
@@ -685,29 +786,34 @@ function applyFiltersAndRender(){
       src.setData(currentGeo);
     } else {
       map.addSource('svc', { type:'geojson', data: currentGeo, cluster:false });
+      
+      // 🎨 UPDATED: Changed layer type from 'circle' to 'symbol' and added responsive icon logic
       map.addLayer({
         id:'points',
-        type:'circle',
+        type:'symbol', // ⬅️ CHANGED: Use 'symbol' for custom icons
         source:'svc',
-        paint:{
-          'circle-radius': [
-            'case', ['==',['get','serviceKey'],'fullCapabilityHub'],
-            7, 4
+        layout:{
+          'icon-image': [ // ⬅️ NEW: Use 'icon-image' property
+            'case', 
+            ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
+            ICON_MAP.fullCapabilityHub, // Manufacturing Icon ID
+            ICON_MAP.supportCenter      // Support Hub Icon ID (default)
           ],
-          'circle-color': [
-            'case', ['==',['get','serviceKey'],'fullCapabilityHub'],
-            '#e41837', '#ffffff'
-          ],
-          'circle-stroke-width': [
-            'case', ['==',['get','serviceKey'],'fullCapabilityHub'],
-            1, 3
-          ],
-          'circle-stroke-color': [
-            'case', ['==',['get','serviceKey'],'fullCapabilityHub'],
-            '#ffffff', '#e41837'
-          ]
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+          // ⬅️ NEW: Responsive icon size based on zoom level
+          'icon-size': [
+    'interpolate', 
+    ['linear'], 
+    ['zoom'],
+    3, 0.4, // Still 40% at zoom 3
+    9, 1.0, // Still 100% at zoom 9
+    12, 2.0 // 🚀 NEW: Now 200% (double the size) at zoom 12 and above
+]
         }
+        // NOTE: The 'paint' object for 'circle' is now removed
       });
+
       map.on('click','points', (e) => {
         const f = e.features[0];
         const p = f.properties;
@@ -728,8 +834,44 @@ function applyFiltersAndRender(){
       map.flyTo({ center:[20,10], zoom:2 });
     }
 }
-  // ❌ REMOVED: // ====== REFRESH LOGIC ====== function is deleted as the button is hidden.
+// 🚀 NEW: MAPBOX GEOCODER INTEGRATION
+// ===================================
 
+// 1. Initialize the Mapbox Geocoder control
+const geocoder = new MapboxGeocoder({
+    accessToken: MAPBOX_TOKEN, // Uses the existing defined token
+    mapboxgl: mapboxgl,
+    marker: false, // Prevents the geocoder from dropping its own marker
+    placeholder: 'Search for a Country or City',
+    // Set proximity to your main area of interest for slightly better results
+    proximity: {
+        longitude: 25.0,
+        latitude: 15.0
+    }
+});
+
+// 2. Mount the Geocoder into the new container
+// This line tells the Geocoder to draw itself inside the HTML element.
+document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map));
+
+// 3. Listen for a successful search result
+geocoder.on('result', (e) => {
+    // When a user searches a location, reset the region filter to 'Global'
+    currentRegionFilter = '';
+    
+    // Visually reset the pills: Deactivate all, Activate 'Global'
+    document.querySelectorAll('#regionFilterPills .filter-pill').forEach(b => b.classList.remove('active'));
+    const globalPill = document.querySelector('#regionFilterPills [data-region=""]');
+    if (globalPill) {
+        globalPill.classList.add('active');
+    }
+    
+    // ❌ REMOVED: We no longer call applyFiltersAndRender(). 
+    // The Geocoder automatically handles the map movement (flyTo), and we 
+    // only want to reset the UI, not force a map data re-render that might 
+    // zoom the map back out to the full 'Global' bounds.
+});
+// ------------------------------------
 
 // ====== EVENTS ======
   
@@ -771,16 +913,25 @@ function applyFiltersAndRender(){
     }, { enableHighAccuracy:true, timeout:10000 });
   };
 
- // ====== BOOT ======
+ // 🚀 UPDATED BOOT SEQUENCE: Load icons before rendering the layer
 (async () => {
-  allCenters = await fetchCenters();
-  buildRegionPills(allCenters); // ✅ Call the function that builds the buttons
+  allCenters = await fetchCenters();
+  buildRegionPills(allCenters);
 
-  if (map.loaded()) {
-    applyFiltersAndRender();
-  } else {
-    map.on('load', applyFiltersAndRender);
-  }
+  // Wait for the map to load its basic tiles/style
+  await new Promise(resolve => {
+    if (map.loaded()) {
+      resolve();
+    } else {
+      map.on('load', resolve);
+    }
+  });
+
+  // 1. Wait for custom icons to load and be added to the style
+  await loadMapIcons(); 
+
+  // 2. Render the map layer using the new icons
+  applyFiltersAndRender(); 
 })();
 
   </script>
