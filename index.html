@@ -77,7 +77,8 @@
     width: 100%; /* KEY CHANGE */
   }
 
-  #regionChips{ flex:1 1 auto; display:flex; gap:8px; flex-wrap:nowrap; } /* Added flex:1 1 auto to let chips take space */
+  #regionChips{ flex:1 1 auto; display:flex; gap:8px; flex-wrap: wrap; /* <--- KEY CHANGE: Allow chips to wrap to new lines */
+    justify-content: center; } /* Added flex:1 1 auto to let chips take space */
   .region-chip{
     height:var(--ctrl-h); padding:0 var(--ctrl-pad-x);
     border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
@@ -514,6 +515,7 @@
   <script src="sidebar.js"></script>
 </body>
 </html>
+
 
 
 
