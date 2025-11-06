@@ -452,14 +452,15 @@
       }
 
       // Fly to bounds of filtered set
-      if (inBounds.length){
-        const b = new mapboxgl.LngLatBounds();
-        inBounds.forEach(c=>b.extend([c.location.lng, c.location.lat]));
-        try{ map.fitBounds(b, { padding:50, maxZoom:6 }); }catch{}
-      } else {
-        map.flyTo({ center:[20,10], zoom:2 });
-      }
-    }
+if (inBounds.length){
+  // --- MINIMAL CHANGE APPLIED HERE ---
+  // Instead of calculating bounds for all points, fly to the fixed initial center/zoom.
+  map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM, padding:50, maxZoom:6 });
+} else {
+  // Keep the original fallback in case the list is empty
+  map.flyTo({ center:[20,10], zoom:2 }); 
+}
+
 
     // Geocoder (countries only)
     const geocoder = new MapboxGeocoder({ accessToken: MAPBOX_TOKEN, mapboxgl, marker:false, placeholder:'Country', proximity:{ longitude:25, latitude:15 } });
@@ -493,4 +494,5 @@
   </script>
 </body>
 </html>
+
 
