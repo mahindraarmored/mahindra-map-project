@@ -457,7 +457,7 @@
     }
 
     // Geocoder (countries only)
-    const geocoder = new MapboxGeocoder({ accessToken: MAPBOX_TOKEN, mapboxgl, marker:false, placeholder:'Country', proximity:{ longitude:25, latitude:15 } });
+    const geocoder = new MapboxGeocoder({ accessToken: MAPBOX_TOKEN, mapboxgl, marker:false, placeholder:'Search MEVA Hubs', proximity:{ longitude:25, latitude:15 } });
     geocoder.on('results', (res) => {
       if (res && Array.isArray(res.features)) {
         res.features = res.features.filter(f => Array.isArray(f.place_type) && f.place_type.includes('country'));
@@ -488,4 +488,5 @@
   </script>
 </body>
 </html>
+
 
