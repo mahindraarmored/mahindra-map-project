@@ -202,7 +202,7 @@
     // 1. Add Zoom (Navigation) control
     // This adds zoom in, zoom out, and a compass
     const navControl = new mapboxgl.NavigationControl();
-    map.addControl(navControl, 'top-right');
+    map.addControl(navControl, 'bottom-right');
     
     // 2. Add "Locate Me" (Geolocate) control
     const geolocateControl = new mapboxgl.GeolocateControl({
@@ -513,6 +513,7 @@
   </script>
 </body>
 </html>
+
 
 
 
