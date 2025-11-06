@@ -132,7 +132,10 @@
   }
 }
 
-  
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group {
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
   
   
   
@@ -194,6 +197,28 @@
       zoom: 2.5
     });
 
+// === ⬇️ ADD THIS CODE ⬇️ ===
+
+    // 1. Add Zoom (Navigation) control
+    // This adds zoom in, zoom out, and a compass
+    const navControl = new mapboxgl.NavigationControl();
+    map.addControl(navControl, 'top-right');
+    
+    // 2. Add "Locate Me" (Geolocate) control
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true, // Continuously update location
+      showUserHeading: true    // Show direction user is facing
+    });
+    map.addControl(geolocateControl, 'top-right');
+    
+    // === ⬆️ END OF NEW CODE ⬆️ ===
+
+
+
+    
     const INITIAL_MAP_CENTER = map.getCenter();
     const INITIAL_MAP_ZOOM = map.getZoom();
 
@@ -488,5 +513,6 @@
   </script>
 </body>
 </html>
+
 
 
