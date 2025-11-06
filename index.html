@@ -120,7 +120,30 @@
   }
   .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-attrib{ order:2; margin:0 !important; background:none; padding:2px 6px; font-size:11px; }
   .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-scale{ display:none !important; }
-</style>
+
+  
+  
+  /* ... All your existing CSS rules (html, body, .panel, #search-and-toggle-group, etc.) ... */
+
+  /* --- ADD THIS NEW SECTION AT THE END --- */
+  @media (max-width: 420px) {
+    /* Target only narrow screens (mobiles) */
+    .panel {
+      /* Override the original left:10px positioning */
+      left: 50% !important;
+      right: auto !important;
+      /* Center the panel horizontally */
+      transform: translateX(-50%) !important;
+    }
+  }
+
+
+  
+  
+  
+  
+  
+  </style>
 </head>
 <body>
 
@@ -470,3 +493,4 @@
   </script>
 </body>
 </html>
+
