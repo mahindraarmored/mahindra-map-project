@@ -72,7 +72,7 @@
   /* MODIFIED: Ensure right button group is full width */
   #right-button-group{
     display:flex;
-    align-items:center;
+    align-items: flex-start !important;
     gap:10px;
     width: 100%; /* KEY CHANGE */
   }
@@ -100,9 +100,11 @@
     font-weight:600; font-size:var(--ctrl-fs); line-height:1;
     cursor:pointer; user-select:none;
     transition:background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    align-self: center;
   }
+    @media (min-width: 720px){
   #resetMapBtn:hover{ background:#000000; }
-
+    }
   /* Popup styles */
   .mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
   .popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
@@ -541,6 +543,7 @@
   <script src="sidebar.js"></script>
 </body>
 </html>
+
 
 
 
