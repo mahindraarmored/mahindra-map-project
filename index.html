@@ -453,13 +453,13 @@
 
       // Fly to bounds of filtered set
 if (inBounds.length){
-  // --- MINIMAL CHANGE APPLIED HERE ---
-  // Instead of calculating bounds for all points, fly to the fixed initial center/zoom.
-  map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM, padding:50, maxZoom:6 });
+  const b = new mapboxgl.LngLatBounds();
+  inBounds.forEach(c=>b.extend([c.location.lng, c.location.lat]));
+  try{ map.fitBounds(b, { padding:50, maxZoom:6 }); }catch{}
 } else {
-  // Keep the original fallback in case the list is empty
-  map.flyTo({ center:[20,10], zoom:2 }); 
+  map.flyTo({ center:[20,10], zoom:2 }); // This is what runs when no filter is active
 }
+
 
 
     // Geocoder (countries only)
@@ -494,5 +494,6 @@ if (inBounds.length){
   </script>
 </body>
 </html>
+
 
 
