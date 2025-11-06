@@ -1,0 +1,102 @@
+/* --- SIDEBAR STYLES --- */
+
+/* 1. The Hamburger Button */
+#menu-toggle-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3; /* Position it above the panel */
+  width: var(--ctrl-h);
+  height: var(--ctrl-h);
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 9999px; /* Make it round */
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  cursor: pointer;
+  /* Style the hamburger lines */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+#menu-toggle-btn .line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #333;
+  transition: all .2s ease;
+}
+
+/* 2. The Sidebar Panel */
+#sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px; /* Sidebar width */
+  max-width: 80%;
+  background: #fff;
+  box-shadow: 0 0 15px rgba(0,0,0,.2);
+  z-index: 10; /* Highest z-index */
+  transform: translateX(-100%); /* Hide it off-screen */
+  transition: transform .3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. The "Open" State */
+#sidebar.open {
+  transform: translateX(0); /* Slide it in */
+}
+
+/* 4. The Overlay */
+#sidebar-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9; /* Below sidebar, above map */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease, visibility .3s ease;
+}
+#sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 5. Sidebar Content Styling (Example) */
+.sidebar-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #eee;
+}
+.sidebar-header h3 { margin: 0; }
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+}
+.sidebar-menu li a {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+.sidebar-menu li a:hover { background: #f4f4f4; }
+.sidebar-menu li.separator {
+  height: 1px;
+  background: #eee;
+  margin: 10px 0;
+}
+
+/* --- ⚠️ IMPORTANT: MODIFICATION FOR YOUR EXISTING .panel STYLE --- */
+/* This part MUST be in your main <style> tag or a CSS file
+   that loads *after* the original .panel style is defined. */
+.panel {
+  /* Change left from 10px to 60px to make space for the button */
+  left: 60px !important; 
+  /* The !important overrides the original "left: 10px" */
+}
