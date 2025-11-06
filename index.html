@@ -168,8 +168,7 @@
     flex-shrink: 0;
   }
 }
-  
-  
+ 
   </style>
 </head>
 <body>
@@ -256,6 +255,31 @@
       fullCapabilityHub: 'manufacturing-icon',
       supportCenter: 'support-icon'
     };
+
+
+
+
+
+// New constant for the Email SVG
+const EMAIL_SVG = `
+  <svg viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg" style="width:24px; height:24px; display:block;" fill="#3a88fe">
+    <path d="M1920 428.266v1189.54l-464.16-580.146-88.203 70.585 468.679 585.904H83.684l468.679-585.904-88.202-70.585L0 1617.805V428.265l959.944 832.441L1920 428.266ZM1919.932 226v52.627l-959.943 832.44L.045 278.628V226h1919.887Z" fill-rule="evenodd"></path>
+  </svg>
+`;
+
+// Existing constant for the WhatsApp SVG (for completeness)
+const WHATSAPP_SVG = `
+  <svg viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width:24px; height:24px; display:block;" fill="currentColor">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g transform="translate(-700.000000, -360.000000)" fill="#25D366">
+        <path d="M723.993033,360 C710.762252,360 700,370.765287 700,383.999801 C700,389.248451 701.692661,394.116025 704.570026,398.066947 L701.579605,406.983798 L710.804449,404.035539 C714.598605,406.546975 719.126434,408 724.006967,408 C737.237748,408 748,397.234315 748,384.000199 C748,370.765685 737.237748,360.000398 724.006967,360.000398 L723.993033,360.000398 L723.993033,360 Z M717.29285,372.190836 C716.827488,371.07628 716.474784,371.034071 715.769774,371.005401 C715.529728,370.991464 715.262214,370.977527 714.96564,370.977527 C714.04845,370.977527 713.089462,371.245514 712.511043,371.838033 C711.806033,372.557577 710.056843,374.23638 710.056843,377.679202 C710.056843,381.122023 712.567571,384.451756 712.905944,384.917648 C713.258648,385.382743 717.800808,392.55031 724.853297,395.471492 C730.368379,397.757149 732.00491,397.545307 733.260074,397.27732 C735.093658,396.882308 737.393002,395.527239 737.971421,393.891043 C738.54984,392.25405 738.54984,390.857171 738.380255,390.560912 C738.211068,390.264652 737.745308,390.095816 737.040298,389.742615 C736.335288,389.389811 732.90737,387.696673 732.25849,387.470894 C731.623543,387.231179 731.017259,387.315995 730.537963,387.99333 C729.860819,388.938653 729.198006,389.89831 728.661785,390.476494 C728.238619,390.928051 727.547144,390.984595 726.969123,390.744481 C726.193254,390.420348 724.021298,389.657798 721.340985,387.273388 C719.267356,385.42535 717.856938,383.125756 717.448104,382.434484 C717.038871,381.729275 717.405907,381.319529 717.729948,380.938852 C718.082653,380.501232 718.421026,380.191036 718.77373,379.781688 C719.126434,379.372738 719.323884,379.160897 719.549599,378.681068 C719.789645,378.215575 719.62006,377.735746 719.450874,377.382942 C719.281687,377.030139 717.871269,373.587317 717.29285,372.190836 Z" id="Whatsapp"> </path>
+      </g>
+    </g>
+  </svg>
+`;
+
+
+
     const MANUFACTURING_BASE64 = 'data:image/png;base64,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';
     const SUPPORT_BASE64 = 'data:image/png;base64,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';
 
@@ -315,28 +339,45 @@
         .map(sym => `<span title="${sym}" aria-hidden="true">${sym}</span>`).join('');
     }
 
-    function hoverHTML(p){
-      const isFC = p.serviceKey === 'fullCapabilityHub';
-      const sub = isFC ? 'Full Capability Hub' : 'Regional Service Hub';
-      const CENTRAL_WA = '971527118654';
-      const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
-      const whatsappMsg = encodeURIComponent(`Hub ID: ${p.hubID || 'N/A'} | Support Request`);
-      const waHref = `https://wa.me/${waNumber}?text=${whatsappMsg}`;
-      const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
-      return `
-        <div class="hover-card" style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;">
-          <div class="info">
-            <div class="title" style="font-weight:700;">${p.country || ''}</div>
-            <div class="subtitle" style="font-size:13px;color:#555;">${sub}</div>
-            <div class="svc-icons" style="display:flex;gap:8px;margin-top:4px;">${getServiceIconsHTML(p)}</div>
-          </div>
-          <div class="actions" style="display:grid;gap:6px;justify-items:end;">
-            <a class="badge" href="${waHref}" target="_blank" rel="noopener" title="WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid rgba(0,0,0,.12);border-radius:6px;">💬</a>
-            <a class="badge" href="${mailHref}" title="Email" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid rgba(0,0,0,.12);border-radius:6px;">✉️</a>
-          </div>
-        </div>`;
-    }
 
+
+function hoverHTML(p){
+  const isFC = p.serviceKey === 'fullCapabilityHub';
+  const sub = isFC ? 'Full Capability Hub' : 'Regional Service Hub';
+  const CENTRAL_WA = '971527118654';
+  const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+  const whatsappMsg = encodeURIComponent(`Hub ID: ${p.hubID || 'N/A'} | Support Request`);
+  const waHref = `https://wa.me/${waNumber}?text=${whatsappMsg}`;
+  const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
+  
+  // NOTE: For better visual spacing, I've increased the badge size to 40px
+  // and ensured the icons inside are 20px.
+  const BADGE_SIZE = '40px'; 
+  const ICON_SIZE = '20px';
+
+  // We modify the SVG constants to include the new size for consistency:
+  const WHATSAPP_SVG_20PX = WHATSAPP_SVG.replace('width:24px; height:24px;', `width:${ICON_SIZE}; height:${ICON_SIZE};`);
+  const EMAIL_SVG_20PX = EMAIL_SVG.replace('width:24px; height:24px;', `width:${ICON_SIZE}; height:${ICON_SIZE};`);
+  
+  return `
+    <div class="hover-card" style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;">
+      <div class="info">
+        <div class="title" style="font-weight:700;">${p.country || ''}</div>
+        <div class="subtitle" style="font-size:13px;color:#555;">${sub}</div>
+        <div class="svc-icons" style="display:flex;gap:8px;margin-top:4px;">${getServiceIconsHTML(p)}</div>
+      </div>
+      <div class="actions" style="display:grid;gap:6px;justify-items:end;">
+        <a class="badge" href="${waHref}" target="_blank" rel="noopener" title="WhatsApp" 
+           style="display:inline-flex;align-items:center;justify-content:center;width:${BADGE_SIZE};height:${BADGE_SIZE};border:1px solid rgba(0,0,0,.12);border-radius:6px;">
+          ${WHATSAPP_SVG_20PX}
+        </a>
+        <a class="badge" href="${mailHref}" title="Email" 
+           style="display:inline-flex;align-items:center;justify-content:center;width:${BADGE_SIZE};height:${BADGE_SIZE};border:1px solid rgba(0,0,0,.12);border-radius:6px;">
+          ${EMAIL_SVG_20PX}
+        </a>
+      </div>
+    </div>`;
+}
     function popupHTML(p){
       const isFC = p.serviceKey === 'fullCapabilityHub';
       const CENTRAL_WA = '971527118654';
