@@ -2,1229 +2,468 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Mahindra Armored — Service Network</title>
+  <title>Mahindra Armored — Service Network (Working)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Mapbox CSS/JS -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-  
-  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+  <!-- Geocoder CSS/JS -->
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css"/>
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Georama:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  /* ===== Base ===== */
+
+  <style>
   html, body, #map { height: 100%; margin: 0; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; overflow-x: hidden; }
 
-  /* ===== Loading spinner ===== */
-  #loading{
-    position:absolute; inset:auto auto 50% 50%;
-    transform:translate(-50%,50%);
-    z-index:9999; display:none;
-    background:rgba(255,255,255,.92);
-    border-radius:10px; padding:16px 22px;
-    font-size:14px; color:#333; box-shadow:0 4px 12px rgba(0,0,0,.15);
-    text-align:center;
-  }
-  #loading::before{
-    content:""; display:block; margin:0 auto 8px;
-    width:22px; height:22px; border:3px solid #1b76d1; border-top-color:transparent;
-    border-radius:50%; animation:spin .8s linear infinite;
-  }
-  @keyframes spin { to{ transform:rotate(360deg); } }
-
-  /* ===== Panel (mobile-first) ===== */
+  /* Panel */
   .panel{
-    position:absolute; top:0; left:0; right:0;
-    z-index:2; background:transparent; padding:14px;
-    border-radius:10px; 
-    display:flex; flex-direction:column;
-    max-height:calc(55vh - env(safe-area-inset-top, 0px));
-    overflow:auto;
+    position:absolute; top:10px; left:10px; z-index:2; right:auto;
+    min-width:360px; max-width:420px; max-height:calc(100% - 20px);
+    padding:14px; border-radius:12px; background:transparent; display:flex; flex-direction:column; gap:10px;
     font-family:"Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
-  .panel label{ display:flex; gap:6px; align-items:center; }
-  .panel select, .panel button{
-    padding:6px 8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff;
-  }
-  .panel button{ cursor:pointer; }
 
-  /* Desktop/tablet: fixed left sidebar */
-  @media (min-width:768px){
-    .panel{
-      top:10px; left:10px; right:auto;
-      min-width:380px;  max-height:calc(100% - 20px);
-      border-radius:10px;
-    }
+  :root{
+    --ctrl-h: clamp(38px, 4.2vw, 46px);
+    --ctrl-pad-x: clamp(10px, 1.2vw, 16px);
+    --ctrl-radius: 9999px;
+    --ctrl-fs: clamp(12px, 1.1vw, 15px);
+    --input-fs: clamp(14px, 1.2vw, 16px);
+    --icon-left: 14px;
   }
 
-  /* ===== Search + Chips layout ===== */
+  /* MODIFIED: Stack elements vertically */
   #search-and-toggle-group{
-    display:flex; align-items:center; gap:10px;
-    flex-wrap:nowrap;           /* keep one line on desktop */
-    width:100%;
+    display:flex;
+    flex-direction: column; /* KEY CHANGE */
+    align-items:center;
+    gap:10px;
+    width: 100%; /* Ensure it spans the panel width */
   }
 
-  /* Geocoder owns the left side and can shrink */
-  #geocoder-container{ flex:1 1 auto; min-width:0; }
+  /* MODIFIED: Ensure geocoder container is full width */
+  #geocoder-container{
+    flex: none; /* KEY CHANGE: Removed flex:1 1 auto */
+    width: 100%; /* KEY CHANGE */
+    min-width:0;
+  }
   #geocoder-container .mapboxgl-ctrl-geocoder{
-    width:100%; max-width:none; min-width:0;   /* prevent overflow in flex */
-  }
-  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input{
-    height:44px; font-size:16px; padding:0 14px 0 44px;
-  }
-  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon{ left:14px; }
-
-  /* Right cluster: chips + reset sit in their own lane */
-  #right-button-group{
-   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1 1 100%;       /* ✅ fills full width */
-  overflow: visible;    /* ✅ no clipping or scroll */
-  justify-content: flex-start;
-}
-
-#regionChips {
-  display: flex;
-  
-  gap: 8px;
-  flex-wrap: wrap;        /* ✅ let them wrap */
-  overflow: visible;      /* ✅ no scroll bar */
-  white-space: normal;    /* ✅ allow line breaks */
-  row-gap: 8px;           /* optional: even vertical spacing */
-}
- 
-
-/* Default (white background, black text) */
-.region-chip {
-  display: inline-flex;
-  align-items: center;
-  height: var(--ctrl-h);
-  padding: 0 14px;
-  background: #fff;
-  color: #000;
-  border: 1px solid #fff;
-  border-radius: var(--ctrl-radius);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1;
-  box-shadow: 0 1px 2px rgba(0,0,0,.06);
-  cursor: pointer;
-  user-select: none;
-  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-
-/* Hover (only when not active) — pink */
-.region-chip:hover:not(.active) {
-  background: #ee5b71;
-  color: #000;
-  border-color: #ee5b71;
-}
-
-/* Active (clicked / filtered) — red */
-.region-chip.active,
-.region-chip[aria-selected="true"] {
-  background: #e41837;
-  color: #fff;
-  border-color: #e41837;
-}
-
-/* Keyboard focus ring */
-.region-chip:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(228,24,55,.25);
-}
-
-
-
-
-
-  /* Reset button stays fixed size */
-  #resetMapBtn{
-    flex:0 0 44px; width:44px; height:44px;
-    display:flex; align-items:center; justify-content:center;
-     border:1px solid #d0d0d0; background:#fff;
-    box-shadow:0 1px 2px rgba(0,0,0,.06);
-  }
-
-  /* ===== Legend (bottom center) ===== */
-  #legend-footer{
-    position:absolute; left:50%; transform:translateX(-50%);
-    bottom:14px; padding:8px 12px; border-radius:10px;
-    background:rgba(255,255,255,.85); border:1px solid rgba(0,0,0,.08);
-    z-index:2; pointer-events:none;
-    font-family:"Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  }
-  #legend-footer .legend-list{ display:flex; gap:20px; align-items:center; justify-content:center; margin:0; padding:0; list-style:none; }
-  #legend-footer .legend-list li{ display:flex; align-items:center; gap:8px; white-space:nowrap; }
-  #legend-footer .legend-list svg, #legend-footer .legend-list img{ width:20px; height:20px; flex:0 0 20px; }
-  @supports (padding-bottom: env(safe-area-inset-bottom)){
-    #legend-footer{ bottom:calc(14px + env(safe-area-inset-bottom)); }
-  }
-  @media (prefers-color-scheme: dark){
-    #legend-footer{ background:rgba(28,28,30,.85); color:#f5f5f7; border-color:rgba(255,255,255,.06); }
-  }
-
-  /* ===== Popups (detail) ===== */
-  .mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
-  .popup{ position:relative; font-family:"Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-  .popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
-  .popup p{ margin:0; font-size:clamp(12px,1.3vw,14px); line-height:1.35; overflow-wrap:anywhere; }
-  .popup-footer{ position:absolute; bottom:0; left:0; width:100%; height:3px; background:#fff; border-radius:0 0 10px 10px; }
-  .popup::before{
-    content:""; position:absolute; top:50%; left:50%; width:100%; height:100%;
-    background:url('watermark.png') center/200px no-repeat; opacity:.1; pointer-events:none; z-index:0;
-    transform:translate(-50%, -50%) rotate(-30deg); transform-origin:center;
-  }
-  .popup *{ position:relative; z-index:1; }
-
-  /* Popup buttons */
-  .contact-buttons{ display:flex; gap:10px; margin-top:12px; margin-bottom:10px; justify-content:center; padding-bottom:10px; }
-  .contact-buttons a{
-    display:inline-block; padding:5px 5px; border-radius:4px; text-decoration:none;
-    font-weight:700; white-space:nowrap; background:#fff; color:#E41837; border:1px solid #E41837;
-    transition:background-color .2s, color .2s, border-color .2s;
-  }
-  .contact-buttons a:hover{ background:#E41837; color:#fff; border-color:#E41837; }
-  .contact-buttons a img{ margin-right:5px; }
-
-  /* Hub ID strip */
-  .hub-id-container{
-    display:inline-flex; align-items:center; gap:8px;
-    border-top:.5px solid #ccc; border-bottom:.5px solid #ccc;
-    padding:10px 0; margin:10px 0;
-  }
-  .hub-id-badge{
-    background:#fff; color:#000; border:1px solid #e2e8f0; border-radius:4px;
-    padding:3px 8px; font-size:.9em; font-weight:500; font-family:'SFMono-Regular','Consolas','Courier New',monospace;
-    letter-spacing:.5px; user-select:all;
-  }
-
-  /* ===== Hover card popups ===== */
-  .hover-popup .mapboxgl-popup-content{
-    border-radius:16px; background:rgba(255,255,255,.92); color:#000;
-    padding:10px 12px; min-width:240px; max-width:340px;
-  }
-  .hover-popup .mapboxgl-popup-tip{ display:none; }
-  .hover-card{
-    font-family:"Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    display:grid; grid-template-columns:1fr auto; column-gap:12px; row-gap:6px; align-items:start;
-  }
-  .hover-card .info{ display:grid; grid-auto-rows:min-content; row-gap:4px; }
-  .hover-card .title{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:16px; line-height:1.2; margin:0; }
-  .hover-card .subtitle, .hover-card .meta{ font-size:13px; line-height:1.2; color:#555; margin:0; }
-  .hover-card .svc-icons{ display:flex; gap:8px; align-items:center; margin-top:4px; font-size:16px; }
-  .hover-card .actions, .hover-card .contact-badges{
-    display:grid; grid-auto-rows:min-content; row-gap:6px; align-content:start; justify-items:end; margin:0;
-  }
-  .hover-card .badge{
-    display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;
-    border-radius:6px; border:1px solid rgba(0,0,0,.12); background:#fff; color:inherit; font-size:14px; line-height:1;
-    padding:0; box-shadow:0 2px 6px rgba(0,0,0,.12); transition:transform .2s, box-shadow .2s, background .15s;
-  }
-  .hover-card .badge:hover{ background:#f5f5f5; }
-  .hover-card .badge:active{ background:#eee; transform:translateY(1px); }
-  @media (max-width:420px){
-    .hover-card{ grid-template-columns:1fr; }
-    .hover-card .actions, .hover-card .contact-badges{ grid-auto-flow:column; column-gap:8px; justify-items:start; }
-  }
-
-  /* ===== Custom control (stack) ===== */
-  .stack-ctrl{ display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.3); border-radius:4px; overflow:hidden; }
-  .stack-btn{
-    width:32px; height:32px; font-size:16px; background:#fff; border:none; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; transition:background .15s ease;
-  }
-  .stack-btn:hover{ background:#f0f0f0; }
-  .stack-btn:active{ background:#ddd; }
-  .stack-btn.locate{ color:#000; font-size:18px; }
-  .stack-btn.locate:hover{ background:#e6f0ff; }
-  .stack-btn.locate.loading{ animation:pulse 1s infinite; background:#e6f0ff; }
-  @keyframes pulse{ 0%{opacity:1} 50%{opacity:.6} 100%{opacity:1} }
-  .mapboxgl-ctrl-bottom-right{ right:50px; bottom:18px; } /* UI gutter */
-
-  /* ===== Misc ===== */
-  .k{ display:inline-block; width:10px; height:10px; border-radius:999px; margin-right:6px; vertical-align:middle; }
-  .legend-item.red{ background:#e41837; border:1px solid #e41837; }
-  .legend-item.white{ background:#fff; border:1px solid #e41837; }
-
-/* === Uniform control sizing === */
-:root { --ctrl-h: 44px; }
-
-/* Geocoder container */
-#geocoder-container { min-height: var(--ctrl-h); }
-
-/* Geocoder control box */
-#geocoder-container .mapboxgl-ctrl-geocoder{
-  display: flex;
-  align-items: center;
-  height: var(--ctrl-h);
-  min-height: var(--ctrl-h);
-  border-radius: var(--ctrl-radius);
-}
-
-/* Geocoder input */
-#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input{
-  height: calc(var(--ctrl-h) - 2px);  /* account for borders */
-  line-height: calc(var(--ctrl-h) - 2px);
-  padding: 0 14px 0 44px;
-  box-sizing: border-box;
-}
-
-/* Geocoder search icon alignment */
-#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon{
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* Reset button (refresh) */
-#resetMapBtn{
-  width: var(--ctrl-h);
-  height: var(--ctrl-h);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid #d0d0d0;
-  border-radius: var(--ctrl-radius);
-  background:#fff;
+    display:flex; align-items:center;
+  width:100% !important; /* IMPORTANT: Override Mapbox's default inline or computed width */
+  height:var(--ctrl-h); min-height:var(--ctrl-h);
+  border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
   box-shadow:0 1px 2px rgba(0,0,0,.06);
 }
+  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input{
+    height:calc(var(--ctrl-h) - 2px);
+    line-height:calc(var(--ctrl-h) - 2px);
+    font-size:var(--input-fs);
+    padding:0 var(--ctrl-pad-x) 0 calc(var(--icon-left) + 24px);
+    box-sizing:border-box;
+  }
+  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon{
+    left:var(--icon-left); top:50%; transform:translateY(-50%);
+  }
 
-/* Optional: tighter vertical alignment for the whole right cluster */
-#right-button-group{ align-items:center; }
+  /* MODIFIED: Ensure right button group is full width */
+  #right-button-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width: 100%; /* KEY CHANGE */
+  }
 
+  #regionChips{ flex:1 1 auto; display:flex; gap:8px; flex-wrap:nowrap; } /* Added flex:1 1 auto to let chips take space */
+  .region-chip{
+    height:var(--ctrl-h); padding:0 var(--ctrl-pad-x);
+    border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:var(--ctrl-fs); line-height:1; cursor:pointer; user-select:none;
+    transition:background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .region-chip:hover{ background:#ee5b71; border-color:#ee5b71; }
+  .region-chip.active{ background:#e41837; color:#fff; border-color:#e41837; }
 
+  /* Responsive oval reset button */
+  #resetMapBtn{
+    flex-shrink: 0; /* Prevents button from shrinking */
+    height:var(--ctrl-h); padding:0 1.2em; width:auto;
+    border-radius:9999px; border:1px solid #d0d0d0; background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:var(--ctrl-fs); line-height:1;
+    cursor:pointer; user-select:none;
+    transition:background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  #resetMapBtn:hover{ background:#000000; }
 
+  /* Popup styles */
+  .mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
+  .popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
+  .popup p{ margin:0; font-size:clamp(12px,1.3vw,14px); line-height:1.35; overflow-wrap:anywhere; }
+  .contact-buttons{ display:flex; gap:10px; margin-top:12px; margin-bottom:10px; justify-content:center; padding-bottom:10px; }
+  .contact-buttons a{
+    display:inline-block; padding:6px 10px; border-radius:9999px; text-decoration:none;
+    font-weight:700; background:#fff; color:#E41837; border:1px solid #E41837;
+    transition:background-color .2s, color .2s, border-color .2s;
+  }
+  .contact-buttons a:hover{ background:#E41837; color:#fff; }
 
-
-
-
-
-
-  /* ===== Mobile behavior: wrap under search ===== */
- @media (max-width:560px){
-  #search-and-toggle-group{ flex-wrap:wrap; }
-  #right-button-group{ flex:0 0 100%; }
-  #regionChips{ flex-wrap:wrap; overflow:visible; white-space:normal; background: inherit;   color: inherit;
-    border-color: inherit;}
-}
-
-
-
-
-
-
+  /* Mapbox controls: put attribution bottom-left */
+  .mapboxgl-ctrl-bottom-left{
+    position:absolute; left:14px; bottom:14px; display:flex !important; flex-direction:column-reverse !important; gap:6px;
+  }
+  .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-attrib{ order:2; margin:0 !important; background:none; padding:2px 6px; font-size:11px; }
+  .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-scale{ display:none !important; }
 </style>
-
-
 </head>
 <body>
 
-
- <div class="panel panel-top-right" aria-label="Search and Filters">
-  
-  <div id="search-and-toggle-group" class="filter-controls">
-  <div id="geocoder-container">
-    <div class="panel-label"></div>
-  </div>
-  
-
-  <div id="right-button-group">
-  <div id="regionChips" aria-label="Regions"></div>  <!-- chips live here -->
-<button id="resetMapBtn" class="filter-pill" title="Reset Map View">⟲</button>
-</div>
-</div>
-  
-  <div class="panel-group filter-controls">
-    
+  <div class="panel" aria-label="Search and Filters">
+    <div class="panel" aria-label="Search and Filters">
+  <div id="search-and-toggle-group">
+    <div id="geocoder-container"></div>
+    <div id="right-button-group"> <div id="regionChips" aria-label="Regions"></div> <button id="resetMapBtn" title="Reset map">⟲</button> </div>
   </div>
 </div>
-
-<div id="legend-footer" class="mapboxgl-ctrl mapboxgl-ctrl-group" role="contentinfo" aria-label="Map legend">
-  
-<ul class="legend-list" aria-label="Legend">
-    <li>
-      <img src=manufacturing.png
-           alt="Armoured Vehicle Manufacturing Facility Icon" 
-           width="20" 
-           height="20">
-      Armoured Vehicle (AV) Manufacturing Facility
-    </li>
-    <li>
-      <img src=support.png 
-           alt="Regional Support Hubs Icon" 
-           width="20" 
-           height="20">
-      Regional Support Hubs for AVs
-    </li>
-</ul>
-
-</div>
+  </div>
 
   <div id="map" role="region" aria-label="Global Service Network"></div>
 
   <script>
-  // ====== CONFIG ======
-  const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
-  const HYGRAPH_ENDPOINT = 'https://ap-south-1.cdn.hygraph.com/content/cmfpk332g005s08uylh0ezd8a/master';
+    // ===== CONFIG =====
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
+    const HYGRAPH_ENDPOINT = 'https://ap-south-1.cdn.hygraph.com/content/cmfpk332g005s08uylh0ezd8a/master';
 
-  const REGION_LABEL = {
-    AMER: '🌎 AMER: North & Latin America',
-    EMEA: '🌍 EMEA: Europe, Middle East, Africa',
-    APAC: '🌏 APAC: Asia Pacific (Asia + Oceania)'
-  };
-const GLOBAL_TITLE = 'View All Regions Worldwide';
-const SERVICE_LABEL = {
-    fullCapabilityHub: [
-      'AV Manufacturing',  
-      'AV After Sales',
-                'AV Spares Support',
-      'AV Disposals'
-    ],
-    otherServiceLocations: 'Other Service Locations',
-    
-    supportCenter: [
-         'AV Service Support',
-        'AV Spares Support',
-      'AV Disposals'
-    ]
-};
-
-  // GraphQL: serviceRange -> services
-  const QUERY = `
-    query {
-      serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
-        id name country region hubID serviceRange phone email
-        location { latitude longitude }
-        updatedAt
-        image { url }
-      }
-    }`;
-
-  // ====== MAP INIT ======
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-  const map = new mapboxgl.Map({
-    container:'map',
-    style:'mapbox://styles/mapbox/streets-v12',
-    center:[25.0,15.0],
-    zoom:2.5
-  });
-  
-const INITIAL_MAP_CENTER = map.getCenter();
-const INITIAL_MAP_ZOOM = map.getZoom();
-
-// ✅ Optional: auto-locate when the map finishes loading
-// map.on('load', () => {
-//  stackControl.locateNow();
-// });
-
-
-class StackControl {
-  onAdd(map) {
-    this._map = map;
-
-    // Capsule container (uses Mapbox's ctrl styles)
-    const c = this._container = document.createElement('div');
-    c.className = 'mapboxgl-ctrl mapboxgl-ctrl-group stack-ctrl';
-
-    // --- LOCATE ---
-    const locate = this.btnLocate = document.createElement('button');
-    locate.type = 'button';
-    locate.className = 'stack-btn locate';
-    locate.title = 'MEVA Hubs near me';
-    // Inline SVG so there is no missing file
-    locate.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"
-           width="18" height="18" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="12" r="4"></circle>
-      </svg>
-    `;
-    locate.onclick = () => this._handleLocate();
-
-    // --- ZOOM + ---
-    const plus = document.createElement('button');
-    plus.type = 'button';
-    plus.className = 'stack-btn';
-    plus.title = 'Zoom in';
-    plus.textContent = '+';
-    plus.onclick = () => this._map.zoomIn();
-
-    // --- ZOOM − ---
-    const minus = document.createElement('button');
-    minus.type = 'button';
-    minus.className = 'stack-btn';
-    minus.title = 'Zoom out';
-    minus.textContent = '–';
-    minus.onclick = () => this._map.zoomOut();
-
-    c.append(locate, plus, minus);
-    return c;
-  }
-
-  // Programmatic API (call these from anywhere)
-  setLoading(flag) { this.btnLocate?.classList.toggle('loading', !!flag); }
-  locateNow() { this.btnLocate?.click(); }
-
-  // Internal handler (migrated logic from your old locateBtn.onclick)
-  _handleLocate() {
-    const map = this._map;
-
-    // 1) Reset filters to Global (migrated from your old handler)
-    if (typeof currentRegionFilter !== 'undefined') {
-      currentRegionFilter = '';
-    }
-    document.querySelectorAll('#regionFilterPills .region-item')
-      .forEach(b => b.classList.remove('active'));
-    const globalPill = document.querySelector('#regionFilterPills [data-region=""]');
-    if (globalPill) globalPill.classList.add('active');
-
-    // 2) Re-render with global view
-    if (typeof applyFiltersAndRender === 'function') {
-      applyFiltersAndRender();
-    }
-
-    // 3) Remove existing geo marker if present
-    if (typeof geoMarker !== 'undefined' && geoMarker) {
-      geoMarker.remove();
-      geoMarker = null;
-    }
-
-    // 4) Show loading state
-    this.setLoading(true);
-
-    // 5) Geolocate
-    if (!navigator.geolocation) {
-      this.setLoading(false);
-      alert('Geolocation not supported');
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const { latitude, longitude } = pos.coords;
-        map.flyTo({ center: [longitude, latitude], zoom: 12 });
-
-        // Optional: add/update a marker at user location
-        if (typeof mapboxgl !== 'undefined') {
-          geoMarker = new mapboxgl.Marker({ color: '#1f2937' })
-            .setLngLat([longitude, latitude])
-            .addTo(map);
-        }
-
-        this.setLoading(false);
-      },
-      err => {
-        console.warn('Geolocation failed:', err?.message || err);
-        this.setLoading(false);
-        alert('Unable to get your location.');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-
-    // Safety: stop loading if the call hangs
-    setTimeout(() => this.setLoading(false), 3000);
-  }
-
-  onRemove() {
-  this._container.remove();
-  this._map = undefined;
-  }
-}
-
-// --- Create and keep a handle to your custom control ---
-const stackControl = new StackControl();
-map.addControl(stackControl, 'bottom-right');
-// ====== DOM ELEMENTS (chips layout) ======
-const chipsContainer = document.getElementById('regionChips'); // NEW
-const resetBtn       = document.getElementById('resetMapBtn'); // keep
-
-// (Optional) If you still reference these anywhere, keep them;
-// otherwise delete to avoid “null” refs:
-// const filterHeaderButton = document.getElementById('filterHeaderButton');
-// const toggleBtn          = document.getElementById('regionFilterToggle');
-// const filterContainer    = document.getElementById('regionFilterContainer');
-
-let currentRegionFilter = '';
-
-// ====== STATE ======
-let allCenters = [];
-let currentGeo = null;
-let geoMarker = null;
-
-// --- GLOBAL HOVER / CLICK STATE ---
-let hoverPopup = null;
-let hoverLock = false;        // true when pointer is over popup content
-let hoverCloseTimer = null;   // close delay timer
-let detailOpen = false;       // true if click popup is open
-let canAutoClose = true;      // grace window gate
-let lastPoint = null;         // freshest mouse pixel point
-let lastHoverId = null;       // which feature is shown in hover
-
-// --- CLEANUP FUNCTION ---
-function cleanupHoverState() {
-  if (hoverCloseTimer) {
-    clearTimeout(hoverCloseTimer);
-    hoverCloseTimer = null;
-  }
-  if (hoverPopup) {
-    hoverPopup.remove();
-    hoverPopup = null;
-  }
-  hoverLock = false;
-  canAutoClose = true;
-  lastHoverId = null;
-  map.getCanvas().style.cursor = '';
-}
-
-// --- MAP INTERACTION CLEANUP HANDLERS ---
-['dragstart', 'zoomstart', 'movestart', 'styledata'].forEach(ev =>
-  map.on(ev, cleanupHoverState)
-);
-
-// --- POINTER TRACKING ---
-map.on('mousemove', (e) => {
-  lastPoint = e.point;
-});
-
-// 🎨 ICON MAPPING AND LOADING
-const ICON_MAP = {
-  fullCapabilityHub: 'manufacturing-icon', // Manufacturing Facility
-  supportCenter: 'support-icon'            // Regional Hub
-};
-
-
-// 💡 PASTE YOUR BASE64 STRINGS HERE 💡
-// REPLACE THE PLACEHOLDERS BELOW with the actual Base64 strings you generated
-const MANUFACTURING_BASE64 = "data:image/png;base64,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"; 
-const SUPPORT_BASE64 = "data:image/png;base64,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";
-
-
-
-
-// Function to load all necessary icons before the map layer is created
-function loadMapIcons() {
-    return new Promise((resolve, reject) => {
-        const iconsToLoad = [
-            { path: MANUFACTURING_BASE64, id: ICON_MAP.fullCapabilityHub },
-            { path: SUPPORT_BASE64, id: ICON_MAP.supportCenter }
-        ];
-
-        let loadedCount = 0;
-        const totalIcons = iconsToLoad.length;
-
-        if (totalIcons === 0) {
-            resolve();
-            return;
-        }
-
-        iconsToLoad.forEach(icon => {
-            // Note: The map.loadImage now accepts the Base64 string directly
-            map.loadImage(icon.path, (error, image) => {
-                if (error) {
-                    console.error(`Error loading icon ${icon.id}:`, error);
-                } else {
-                    if (!map.hasImage(icon.id)) {
-                        map.addImage(icon.id, image);
-                    }
-                }
-                loadedCount++;
-                if (loadedCount === totalIcons) {
-                    resolve();
-                }
-            });
-        });
-    });
-}
-// --------------------------
-// --------------------------
-
-
-  // ====== FETCH ======
-  async function fetchCenters(){
-    const res = await fetch(HYGRAPH_ENDPOINT, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      cache:'no-store',
-      body: JSON.stringify({ query: QUERY })
-    });
-    const json = await res.json();
-    if (!json.data) {
-      console.error('Hygraph error:', json.errors || json);
-      return [];
-    }
-    const list = (json.data.serviceNetworks || []).filter(c => c.location);
-    // normalize keys to match SERVICE_LABEL usage
-    return list.map(c => ({
-      ...c,
-      services: c.serviceRange
-    }));
-  }
-
-function buildRegionPills(list){
-  const CUSTOM_REGION_ORDER = ['AMER', 'EMEA', 'APAC'];
-  const regions = [...new Set(list.map(c => c.region).filter(Boolean))]
-    .sort((a, b) => CUSTOM_REGION_ORDER.indexOf(a) - CUSTOM_REGION_ORDER.indexOf(b));
-
-  const chips = [{ code:'', label:'Global', title: GLOBAL_TITLE }].concat(
-    regions.map(code => {
-      const full = REGION_LABEL[code] || code;
-      return { code, label: full.split(':')[0].trim(), title: full };
-    })
-  );
-
-  regionChips.setAttribute('role','tablist'); // optional a11y
-
-  chipsContainer.innerHTML = chips.map(({code, label, title}) => `
-    <button
-      class="region-chip${code === currentRegionFilter ? ' active' : ''}"
-      data-region="${code}" title="${title}"
-      role="tab" aria-selected="${code === currentRegionFilter ? 'true' : 'false'}"
-    >
-      <span class="chip-dot" aria-hidden="true"></span>
-      ${label}
-    </button>
-  `).join('');
-
-  chipsContainer.onclick = (e) => {
-    const btn = e.target.closest('.region-chip');
-    if (!btn) return;
-    const code = btn.getAttribute('data-region') || '';
-    if (currentRegionFilter === code) return;
-
-    currentRegionFilter = code;
-
-    // toggle active + aria
-    chipsContainer.querySelectorAll('.region-chip').forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-selected','false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-selected','true');
-
-    applyFiltersAndRender();
-  };
-}
-
-
-
-  // ====== HELPERS ======
-  function toGeoJSON(list){
-    return {
-      type:'FeatureCollection',
-      features: list.map(c => ({
-        type:'Feature',
-        properties:{
-          id: c.id,
-          name: c.name,
-          country: c.country || '',
-          region: c.region || '',
-          hubID: c.hubID || '',
-          phone: c.phone || '',
-          email: c.email || '',
-          serviceKey: c.services || '',
-          logo: (c.image && c.image.url) || ''
-        },
-        geometry:{ type:'Point', coordinates:[c.location.longitude, c.location.latitude] }
-      }))
+    const REGION_LABEL = {
+      AMER: '🌎 AMER: North & Latin America',
+      EMEA: '🌍 EMEA: Europe, Middle East, Africa',
+      APAC: '🌏 APAC: Asia Pacific (Asia + Oceania)'
     };
-  }
+    const GLOBAL_TITLE = 'View All Regions Worldwide';
 
-  const normalizePhone = s => (s||'').replace(/[^\d]/g,''); // keep digits for wa.me
+    const SERVICE_LABEL = {
+      fullCapabilityHub: [ 'AV Manufacturing', 'AV After Sales', 'AV Spares Support', 'AV Disposals' ],
+      otherServiceLocations: 'Other Service Locations',
+      supportCenter: [ 'AV Service Support', 'AV Spares Support', 'AV Disposals' ]
+    };
 
-function popupHTML(p, lat, lng){
-  const isFC = p.serviceKey === 'fullCapabilityHub';
+    // GraphQL query
+    const QUERY = `
+      query {
+        serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
+          id name country region hubID serviceRange phone email
+          location { latitude longitude }
+          updatedAt
+          image { url }
+        }
+      }`;
 
-  // Helper function to create contact HTML block (can be reused)
-  const createContactHTML = (p) => {
-    const whatsappMsg = encodeURIComponent(
-      `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\n` +
-      `Good day,\n\n` +
-      `I am contacting regarding:\n`
-    );
+    // ===== MAP INIT =====
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [25.0, 15.0],
+      zoom: 2.5
+    });
 
-    const CENTRAL_WA = '971527118654';
-    const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+    const INITIAL_MAP_CENTER = map.getCenter();
+    const INITIAL_MAP_ZOOM = map.getZoom();
 
-    const whatsappIcon = '<img src="wa.png" alt="WhatsApp" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
-    const mailIcon = '<img src="mail.png" alt="Email" style="width:14px;height:14px;margin-left:4px;vertical-align:middle">';
+    // Simple symbol icons (base64) — no external files required
+    const ICON_MAP = {
+      fullCapabilityHub: 'manufacturing-icon',
+      supportCenter: 'support-icon'
+    };
+    const MANUFACTURING_BASE64 = 'data:image/png;base64,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';
+    const SUPPORT_BASE64 = 'data:image/png;base64,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';
 
-    const phoneHTML = waNumber
-      ? `<a target="_blank" rel="noopener" href="https://wa.me/${waNumber}?text=${whatsappMsg}">${whatsappIcon}WhatsApp</a>`
-      : '';
-
-    const emailAddr = p.email || 'support@mahindraarmored.com';
-    const emailHTML = `<a href="mailto:${emailAddr}">${mailIcon}Email</a>`;
-
-    return `
-      <div class="contact-buttons">
-        ${phoneHTML}
-        ${emailHTML}
-      </div>
-    `;
-  };
-
-  // Helper function to create Service Range HTML block (can be reused)
- // Add isFC as an argument so the function knows the hub type
-// Function is defined to accept the 'isFC' flag
-const createServiceHTML = (p, isFC) => {
-    const serviceData = SERVICE_LABEL[p.serviceKey] || p.serviceKey || '';
-
-    // CONDITIONAL HEADING LOGIC:
-    // If isFC is true (Full-Capability Hub), headingHTML is empty ('').
-    // If isFC is false (Regional Support Hub), the heading is included.
-    const headingHTML = isFC
-        ? '' 
-        : '<p><strong>🧰 Service Range:</strong></p>'; 
-
-    let serviceHTML;
-    if (Array.isArray(serviceData)) {
-        // If it's an array, create an unordered list (bullet points)
-        serviceHTML = `
-            <ul style="padding-left: 20px; margin-top: 5px; list-style-type: disc; color: #4b5563;">
-                ${serviceData.map(item => `<li style="margin-bottom: 4px; line-height: 1.3;">${item}</li>`).join('')}
-            </ul>
-        `;
-    } else {
-        // Otherwise, render as a single paragraph
-        const serviceText = String(serviceData).trim();
-        serviceHTML = `<p style="margin-top:10px;text-align:justify;">${serviceText || '—'}</p>`;
+    function loadMapIcons(){
+      return new Promise((resolve) => {
+        const icons = [
+          { id: ICON_MAP.fullCapabilityHub, path: MANUFACTURING_BASE64 },
+          { id: ICON_MAP.supportCenter, path: SUPPORT_BASE64 }
+        ];
+        let loaded = 0;
+        icons.forEach(({id, path}) => {
+          map.loadImage(path, (err, img) => {
+            if (!err && img && !map.hasImage(id)) map.addImage(id, img);
+            loaded++; if (loaded === icons.length) resolve();
+          });
+        });
+      });
     }
 
-    return `
-        <div class="service-range">
-            ${headingHTML}  ${serviceHTML}
-        </div>
-    `;
-};
-// ----------------------------------------------------------------------
-// --- START: Separate HTML for Full-Capability Hub (isFC = true) ---
-// ----------------------------------------------------------------------
+    // ===== DATA =====
+    async function fetchCenters(){
+      const res = await fetch(HYGRAPH_ENDPOINT, {
+        method:'POST', headers:{ 'Content-Type':'application/json' }, cache:'no-store',
+        body: JSON.stringify({ query: QUERY })
+      });
+      const json = await res.json();
+      if (!json.data) { console.error('Hygraph error:', json.errors || json); return []; }
+      const list = (json.data.serviceNetworks || []).filter(c => c.location);
+      return list.map(c => ({
+        id: c.id,
+        name: c.name,
+        country: c.country || '',
+        region: c.region || '',
+        hubID: c.hubID || '',
+        phone: c.phone || '',
+        email: c.email || '',
+        services: c.serviceRange,
+        logo: (c.image && c.image.url) || '',
+        location: { lat: c.location.latitude, lng: c.location.longitude }
+      }));
+    }
 
-  if (isFC) {
-  const logoHTML = p.logo
-  ? `<div style="text-align: center; padding-top: 10px; margin-bottom: 10px;">
-       <div style="
-         display: inline-flex;
-         align-items: center;
-         justify-content: center;
-         width: 60px;
-         height: 60px;
-         border-radius: 50%;
-         background-color: #E6E6E6;
-         overflow: hidden;
-         margin: 0 auto 5px auto;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-       ">
-         <img src="${p.logo}" alt="${p.name} logo" style="
-           width: 100%;
-           height: 100%;
-           object-fit: contain; /* 🔹 ensures full logo visible */
-           object-position: center; /* 🔹 centers the logo */
-           display: block;
-         ">
-       </div>
-     </div>`
-  : '';
+    const SERVICE_ICON_MAP = {
+      'AV Manufacturing': '🏭',
+      'AV After Sales': '⚙️',
+      'AV Spares Support': '🧰',
+      'AV Disposals': '♻️',
+      'AV Service Support': '🛠️'
+    };
 
+    const normalizePhone = s => (s||'').replace(/[^\d]/g,'');
 
-    return `
-      <div class="popup full-capability">
-        
-        ${logoHTML}
-<div style="background-color: #FCFCFC; ">
-          <p><strong><span style="color:#E41837;">End-to-End</p><p>Armoured Vehicle Services</span></strong></p>
-        
+    function getServiceIconsHTML(p){
+      const data = SERVICE_LABEL[p.serviceKey];
+      const items = Array.isArray(data) ? data : (data ? [data] : []);
+      return items.map(label => SERVICE_ICON_MAP[label] || '').filter(Boolean)
+        .map(sym => `<span title="${sym}" aria-hidden="true">${sym}</span>`).join('');
+    }
 
-        ${createServiceHTML(p, isFC)}
-        ${createContactHTML(p)}
+    function hoverHTML(p){
+      const isFC = p.serviceKey === 'fullCapabilityHub';
+      const sub = isFC ? 'Full Capability Hub' : 'Regional Service Hub';
+      const CENTRAL_WA = '971527118654';
+      const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+      const whatsappMsg = encodeURIComponent(`Hub ID: ${p.hubID || 'N/A'} | Support Request`);
+      const waHref = `https://wa.me/${waNumber}?text=${whatsappMsg}`;
+      const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
+      return `
+        <div class="hover-card" style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;">
+          <div class="info">
+            <div class="title" style="font-weight:700;">${p.country || ''}</div>
+            <div class="subtitle" style="font-size:13px;color:#555;">${sub}</div>
+            <div class="svc-icons" style="display:flex;gap:8px;margin-top:4px;">${getServiceIconsHTML(p)}</div>
+          </div>
+          <div class="actions" style="display:grid;gap:6px;justify-items:end;">
+            <a class="badge" href="${waHref}" target="_blank" rel="noopener" title="WhatsApp" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid rgba(0,0,0,.12);border-radius:6px;">💬</a>
+            <a class="badge" href="${mailHref}" title="Email" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid rgba(0,0,0,.12);border-radius:6px;">✉️</a>
+          </div>
+        </div>`;
+    }
 
-        </div>
-        <div class="popup-footer"></div>
-      </div>
-    `;
-  }
+    function popupHTML(p){
+      const isFC = p.serviceKey === 'fullCapabilityHub';
+      const CENTRAL_WA = '971527118654';
+      const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
+      const waHref = `https://wa.me/${waNumber}?text=${encodeURIComponent('Hub ID: ' + (p.hubID||'N/A'))}`;
+      const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
 
-// ----------------------------------------------------------------------
-// --- ELSE: HTML for Regional Support Hub (isFC = false) ---
-// ----------------------------------------------------------------------
+      const serviceData = SERVICE_LABEL[p.serviceKey] || p.serviceKey || '';
+      const serviceHTML = Array.isArray(serviceData)
+        ? `<ul style="padding-left:20px;margin-top:6px;list-style:disc;color:#4b5563;">${serviceData.map(i=>`<li>${i}</li>`).join('')}</ul>`
+        : `<p style="margin-top:6px;">${String(serviceData || '—')}</p>`;
 
-  else { // Regional Support Hub
-    // 1. Generate logoHTML with the centering wrapper
-  const logoHTML = p.logo
+      const title = isFC
+        ? '<strong><span style="color:#E41837;">End‑to‑End</span> Armoured Vehicle Services</strong>'
+        : `<strong>Regional Support Hub — <span style="color:#E41837;">${p.country || '—'}</span></strong>`;
+
+      // 🔄 RE-INTEGRATED LOGO LOGIC
+      const logoHTML = p.logo
         ? `<div style="text-align: center; padding-top: 10px; margin-bottom: 10px;">
-             <div style="
-               display: inline-flex;
-               align-items: center;
-               justify-content: center;
-               width: 60px;
-               height: 60px;
-               border-radius: 50%;
-               background-color: #E6E6E6; /* Optional: background color for the circle */
-               overflow: hidden;           /* Crucial: hides parts of image that go outside the circle */
-               margin: 0 auto 5px auto;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-             ">
-               <img src="${p.logo}" alt="${p.name} logo" style="
-                 width: 100%;             /* Make image take full width of container */
-                 height: 100%;            /* Make image take full height of container */
-                 object-fit: cover;       /* CRUCIAL: Makes image fill the circle, cropping if necessary */
-                 display: block;
-               ">
-             </div>
-           </div>`
+              <div style="
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background-color: #E6E6E6;
+                overflow: hidden;
+                margin: 0 auto 5px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+              ">
+                <img src="${p.logo}" alt="${p.name} logo" style="
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  object-position: center;
+                  display: block;
+                ">
+              </div>
+            </div>`
         : '';
 
-    return `
-      <div class="popup regional-support">
-        
-        
-        ${logoHTML}
-        <div style="background-color: #Ffffff; padding: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);">
-          <p><strong>Regional Support Hub - <span style="color:#E41837;">${p.country || '—'}</span></strong></p>
-        </div>
-        
-         
+      return `
+        <div class="popup full-capability">
+          ${logoHTML}
+          <p>${title}</p>
+          ${serviceHTML}
+          <div class="contact-buttons">
+            <a href="${waHref}" target="_blank" rel="noopener">WhatsApp</a>
+            <a href="${mailHref}">Email</a>
+          </div>
+          ${!isFC ? `<div style="background:#f3f4f6;padding:8px;border-radius:6px;text-align:center;margin-top:6px;">HUB ID: <strong>${p.hubID || ''}</strong></div>` : ''}
+        </div>`;
+    }
 
-        ${createServiceHTML(p, isFC)}
-        ${createContactHTML(p)}
+    // ===== STATE =====
+    let allCenters = [];
+    let currentRegionFilter = '';
+    let hoverPopup = null, hoverCloseTimer = null, detailOpen = false, lastHoverId = null;
 
-        <div style="background-color: #F1F1f1; padding-top: 10px; padding-bottom: 10px; text-align: center;box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);">
-          <p style="margin-bottom: 8px;"><strong>HUB ID</strong></p>
-          <p>
-            <strong><span class="hub-id-badge">${p.hubID || ''}</strong>
-          </p>
-        </div>
-        <div class="popup-footer"></div>
-      </div>
-    `;
-}
-}
+    function cleanupHover(){
+      if (hoverCloseTimer){ clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
+      if (hoverPopup){ hoverPopup.remove(); hoverPopup = null; }
+      lastHoverId = null; map.getCanvas().style.cursor = '';
+    }
 
-// --- small service icon mapping (emoji for now; swap for <img> if you prefer)
-const SERVICE_ICON_MAP = {
-  'AV Manufacturing': '🏭',
-  'AV After Sales': '⚙️',
-  'AV Spares Support': '🧰',
-  'AV Disposals': '♻️',
-  'AV Service Support': '🛠️'
-};
+    ['dragstart','zoomstart','movestart','styledata'].forEach(ev => map.on(ev, cleanupHover));
 
-// Build the little row of service icons from p.serviceKey using your SERVICE_LABEL
-function getServiceIconsHTML(p) {
-  const serviceData = SERVICE_LABEL[p.serviceKey];
-  const items = Array.isArray(serviceData) ? serviceData : (serviceData ? [serviceData] : []);
-  if (!items.length) return '';
-  const icons = items
-    .map(label => SERVICE_ICON_MAP[label]?.toString() || '')
-    .filter(Boolean)
-    .map(sym => `<span title="" aria-hidden="true">${sym}</span>`)
-    .join('');
-  return icons ? `<div class="svc-icons">${icons}</div>` : '';
-}
+    function toGeoJSON(list){
+      return {
+        type: 'FeatureCollection',
+        features: list.map(c => ({
+          type: 'Feature',
+          properties: {
+            id: c.id, name: c.name, country: c.country, region: c.region,
+            hubID: c.hubID, phone: c.phone, email: c.email, serviceKey: c.services, logo: c.logo
+          },
+          geometry: { type: 'Point', coordinates: [c.location.lng, c.location.lat] }
+        }))
+      };
+    }
 
-function hoverHTML(p) {
-  // Country
-  const country = p.country || '';
-  // Title line based on hub type
-  const isFC = p.serviceKey === 'fullCapabilityHub';
-  const sub = isFC ? 'Full Capability Hub' : 'Regional Service Hub';
+    function buildRegionChips(list){
+      const container = document.getElementById('regionChips');
+      const order = ['AMER','EMEA','APAC'];
+      const regions = [...new Set(list.map(c=>c.region).filter(Boolean))].sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+      
+      // *** MODIFIED LINE HERE ***
+      // We are directly building the chips array from 'regions', skipping the hardcoded 'Global' chip.
+      const chips = regions.map(code => ({ 
+        code, 
+        label:(REGION_LABEL[code]||code).split(':')[0].trim(), 
+        title: REGION_LABEL[code]||code 
+      }));
+      // *** END MODIFICATION ***
+      
+      container.innerHTML = chips.map(({code,label,title}) => `
+        <button class="region-chip${code===currentRegionFilter?' active':''}" data-region="${code}" title="${title}">${label}</button>
+      `).join('');
+      container.onclick = e => {
+        const btn = e.target.closest('.region-chip'); if (!btn) return;
+        const code = btn.getAttribute('data-region')||''; 
+        // NOTE: The 'code' will never be '' now, so the next line is safe.
+        if (currentRegionFilter===code) return;
+        currentRegionFilter = code; container.querySelectorAll('.region-chip').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+        applyFiltersAndRender();
+      };
+    }
 
-  // Contact links (same logic as your main popup)
-  const CENTRAL_WA = '971527118654';
-  const normalizePhone = s => (s || '').replace(/[^\d]/g, '');
-  const waNumber = normalizePhone(p.phone) || CENTRAL_WA;
-  const whatsappMsg = encodeURIComponent(
-    `Hub ID: ${p.hubID || 'N/A'} | Support Request\n\nGood day,\n\nI am contacting regarding:\n`
-  );
+    function applyFiltersAndRender(){
+      const r = currentRegionFilter;
+      const inBounds = allCenters.filter(c => !r || c.region === r);
 
-  const whatsappIcon = '<img src="bgwa.png" alt="WhatsApp" width="20" height="20">';
-  const mailIcon = '<img src="bgma.png" alt="Email" width="20" height="20">';
+      const src = map.getSource('svc');
+      if (!src){
+        map.addSource('svc', { type:'geojson', data: toGeoJSON(allCenters), cluster: false });
+        map.addLayer({
+          id:'points', type:'symbol', source:'svc',
+          layout:{
+            'icon-image': [ 'case', ['==',['get','serviceKey'],'fullCapabilityHub'], ICON_MAP.fullCapabilityHub, ICON_MAP.supportCenter ],
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 1.0, 12, 2.0]
+          }
+        });
 
-  const waHref = `https://wa.me/${waNumber}?text=${whatsappMsg}`;
-  const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
+        // Click popup (detail)
+        map.on('click','points',(e)=>{
+          cleanupHover(); detailOpen = true;
+          const f = e.features[0];
+          new mapboxgl.Popup({ closeOnMove: true })
+            .setLngLat(f.geometry.coordinates)
+            .setHTML(popupHTML(f.properties))
+            .addTo(map)
+            .on('close', ()=>{ detailOpen = false; });
+        });
 
-  return `
-    <div class="hover-card">
-      <!-- LEFT: text + service icons -->
-      <div class="info">
-        <div class="title">${country}</div>
-        <div class="subtitle">${sub}</div>
-        ${getServiceIconsHTML(p)}
-      </div>
+        // Always enable hover handlers (no touch guard)
+        map.on('mouseenter','points',(e)=>{
+          if (detailOpen) return;
+          map.getCanvas().style.cursor = 'pointer';
+          const f = e.features[0]; const p = f.properties; const id = f.id || p.id || JSON.stringify(p);
+          if (!hoverPopup){
+            hoverPopup = new mapboxgl.Popup({ closeButton:false, closeOnClick:false, offset:14, className:'hover-popup' })
+              .setLngLat(f.geometry.coordinates)
+              .setHTML(hoverHTML(p))
+              .addTo(map);
+            lastHoverId = id;
+            const el = hoverPopup.getElement();
+            el.addEventListener('mouseenter', ()=>{ if (hoverCloseTimer){ clearTimeout(hoverCloseTimer); hoverCloseTimer=null; } });
+            el.addEventListener('mouseleave', ()=>{ hoverCloseTimer = setTimeout(()=>cleanupHover(), 150); });
+          }
+        });
+        map.on('mousemove','points',(e)=>{
+          if (!hoverPopup) return;
+          const f = e.features && e.features[0]; if (!f) return;
+          const p = f.properties; const id = f.id || p.id || JSON.stringify(p);
+          if (id !== lastHoverId){ hoverPopup.setHTML(hoverHTML(p)); lastHoverId = id; }
+          hoverPopup.setLngLat(f.geometry.coordinates);
+        });
+        map.on('mouseleave','points',()=>{ hoverCloseTimer = setTimeout(()=>cleanupHover(), 120); });
+      }
 
-      <!-- RIGHT: vertical action buttons -->
-      <div class="actions">
-        <a class="badge" href="${waHref}" target="_blank" rel="noopener" title="WhatsApp">${whatsappIcon}</a>
-        <a class="badge" href="${mailHref}" title="Email">${mailIcon}</a>
-      </div>
-    </div>
-  `;
-}
+      // Fly to bounds of filtered set
+      if (inBounds.length){
+        const b = new mapboxgl.LngLatBounds();
+        inBounds.forEach(c=>b.extend([c.location.lng, c.location.lat]));
+        try{ map.fitBounds(b, { padding:50, maxZoom:6 }); }catch{}
+      } else {
+        map.flyTo({ center:[20,10], zoom:2 });
+      }
+    }
 
-
-  // ====== FILTER + RENDER (MODIFIED) ======
-function applyFiltersAndRender() {
-  // Remove the old user location marker if it exists (THIS IS CORRECT)
-  if (geoMarker) {
-    geoMarker.remove();
-    geoMarker = null; // Clear the reference
-  }
-
-  // --- 1. Filter Data *ONLY* for Bounding Box Calculation ---
-  const r = currentRegionFilter;
-  const centersForBounds = allCenters.filter(c => !r || c.region === r);
-
-  // --- 2. Update Map Layer (Keep ALL Points) ---
-  const src = map.getSource('svc');
-  if (!src) {
-    // First load: add source with ALL centers
-    currentGeo = toGeoJSON(allCenters);
-    map.addSource('svc', { type: 'geojson', data: currentGeo, cluster: false });
-
-    // Add the symbols
-    map.addLayer({
-      id: 'points',
-      type: 'symbol',
-      source: 'svc',
-      layout: {
-        'icon-image': [
-          'case',
-          ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
-          ICON_MAP.fullCapabilityHub,
-          ICON_MAP.supportCenter
-        ],
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 3, 0.4, 9, 1.0, 12, 2.0]
+    // Geocoder (countries only)
+    const geocoder = new MapboxGeocoder({ accessToken: MAPBOX_TOKEN, mapboxgl, marker:false, placeholder:'Country', proximity:{ longitude:25, latitude:15 } });
+    geocoder.on('results', (res) => {
+      if (res && Array.isArray(res.features)) {
+        res.features = res.features.filter(f => Array.isArray(f.place_type) && f.place_type.includes('country'));
       }
     });
+    document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map));
 
-    // --- CLICK (detail) POPUP: suppress hover while open ---
-    map.on('click', 'points', (e) => {
-      cleanupHoverState();       // clear any hover
-      lastHoverId = null;
-      detailOpen = true;
-
-      const f = e.features[0];
-      new mapboxgl.Popup({ closeOnMove: true })
-        .setLngLat(f.geometry.coordinates)
-        .setHTML(popupHTML(f.properties))
-        .addTo(map)
-        .on('close', () => { detailOpen = false; });
-    });
-
-    // =========================================================
-    // ✅ Disable hover popups on mobile/touch devices
-    // =========================================================
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    if (!isTouchDevice) {
-      // --- HOVER POPUP (reusable + grace + fresh-pointer check) ---
-      map.on('mouseenter', 'points', (e) => {
-        if (detailOpen) return;
-
-        // seed lastPoint so rAF has something even if the mouse didn't move yet
-        lastPoint = e.point;
-
-        const f = e.features[0];
-        const p = f.properties;
-        const [lng, lat] = f.geometry.coordinates;
-        const currentId = f.id ?? p.id ?? p.uid ?? JSON.stringify(p);
-
-        // Cancel any pending close
-        if (hoverCloseTimer) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
-        map.getCanvas().style.cursor = 'pointer';
-
-        // Reuse existing popup if already open
-        if (hoverPopup) {
-          if (currentId !== lastHoverId) {
-            hoverPopup.setHTML(hoverHTML(p));
-            lastHoverId = currentId;
-          }
-          hoverPopup.setLngLat([lng, lat]);
-          hoverLock = true;
-          return;
-        }
-
-        // Creation path with global grace
-        canAutoClose = false;
-        setTimeout(() => { canAutoClose = true; }, 180);
-
-        requestAnimationFrame(() => {
-          if (detailOpen || hoverPopup) return;
-
-          const pt = lastPoint || e.point;
-          const feats = map.queryRenderedFeatures(pt, { layers: ['points'] });
-          if (!feats.length) { canAutoClose = true; return; }
-
-          const fNow = feats[0];
-          const pNow = fNow.properties;
-          const [lngNow, latNow] = fNow.geometry.coordinates;
-          const idNow = fNow.id ?? pNow.id ?? pNow.uid ?? JSON.stringify(pNow);
-
-          hoverPopup = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            offset: 14,
-            className: 'hover-popup'
-          })
-            .setLngLat([lngNow, latNow])
-            .setHTML(hoverHTML(pNow))
-            .addTo(map);
-
-          lastHoverId = idNow;
-
-          const el = hoverPopup.getElement();
-          el.addEventListener('mouseenter', () => {
-            hoverLock = true;
-            if (hoverCloseTimer) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
-          });
-          el.addEventListener('mouseleave', () => {
-            hoverLock = false;
-            hoverCloseTimer = setTimeout(() => {
-              if (canAutoClose && !hoverLock && hoverPopup) cleanupHoverState();
-            }, 200);
-          });
-
-          // stop clicks inside the card from bubbling to the map
-          el.querySelectorAll('.hover-card .badge, .hover-card a, .hover-card button')
-            .forEach(node => node.addEventListener('click', evt => evt.stopPropagation(), { passive: true }));
-        });
-      });
-
-      // Keep hover alive while moving across the layer; update content only when feature changes
-      map.on('mousemove', 'points', (e) => {
-        if (!hoverPopup) return;
-        if (hoverCloseTimer) { clearTimeout(hoverCloseTimer); hoverCloseTimer = null; }
-
-        const f = e.features && e.features[0];
-        if (!f) return;
-
-        const p = f.properties;
-        const id = f.id ?? p.id ?? p.uid ?? JSON.stringify(p);
-        if (id !== lastHoverId) {
-          hoverPopup.setHTML(hoverHTML(p));
-          lastHoverId = id;
-        }
-        hoverPopup.setLngLat(f.geometry.coordinates);
-        hoverLock = true;
-      });
-
-      // Respect grace on layer leave
-      map.on('mouseleave', 'points', () => {
-        map.getCanvas().style.cursor = '';
-        hoverCloseTimer = setTimeout(() => {
-          if (canAutoClose && !hoverLock && hoverPopup) cleanupHoverState();
-        }, 100);
-      });
-    } // ← end touch-guard
-  } // ← end if (!src)
-
-  // --- 3. Calculate and Fly to Bounds ---
-  if (centersForBounds.length > 0) {
-    const bounds = new mapboxgl.LngLatBounds();
-    centersForBounds.forEach(c => c.location && bounds.extend([c.location.longitude, c.location.latitude]));
-    try {
-      map.fitBounds(bounds, { padding: 50, maxZoom: 6 });
-    } catch {}
-  } else {
-    // Fallback if the selected region has no centers
-    map.flyTo({ center: [20, 10], zoom: 2 });
-  }
-}
-
-// 🚀 MAPBOX GEOCODER INTEGRATION (with globe toggle)
-
-
-// 1) Initialize the Mapbox Geocoder
-const geocoder = new MapboxGeocoder({
-  accessToken: MAPBOX_TOKEN,
-  mapboxgl: mapboxgl,
-  marker: false,
-  placeholder: 'Country',
-  proximity: { longitude: 25.0, latitude: 15.0 }
-});
-
-// Filter results to show only countries
-geocoder.on('results', (res) => {
-  if (res && Array.isArray(res.features)) {
-    res.features = res.features.filter(
-      f => Array.isArray(f.place_type) && f.place_type.includes('country')
-    );
-  }
-});
-
-
-
-
-// 2) Mount the Geocoder into the container
-const gc = document.getElementById('geocoder-container');
-gc.appendChild(geocoder.onAdd(map));
-
-
-
-
-// ====== EVENTS ======
-
-
-
-
-// --- 2. NEW LOGIC: Reset Button Click Handler ---
-if (resetBtn) {
-    resetBtn.onclick = () => {
-        // a. Reset Filters to Global
-        currentRegionFilter = ''; 
-        document.querySelectorAll('#regionFilterPills .filter-pill').forEach(b => b.classList.remove('active'));
-        const globalPill = document.querySelector('#regionFilterPills [data-region=""]');
-        if (globalPill) {
-            globalPill.classList.add('active');
-        }
-
-        // b. Apply filter change (clears markers/data)
-        applyFiltersAndRender(); 
-        
-        // c. Reset map view (Uses variables captured at map initialization)
-        map.flyTo({
-            center: INITIAL_MAP_CENTER, 
-            zoom: INITIAL_MAP_ZOOM,     
-            bearing: 0, 
-            pitch: 0, 
-            essential: true 
-        });
-
-        // d. Ensure Region Filter box is closed and button state is reset
-        if (filterContainer) filterContainer.style.display = 'none';
-        if (toggleBtn) {
-            toggleBtn.textContent = '🌍 Regional';
-            toggleBtn.classList.add('active');
-        }
+    // Reset
+    document.getElementById('resetMapBtn').onclick = ()=>{
+      currentRegionFilter = '';
+      document.querySelectorAll('#regionChips .region-chip').forEach(b=>b.classList.remove('active'));
+      const globalBtn = document.querySelector('#regionChips .region-chip[data-region=""]'); if (globalBtn) globalBtn.classList.add('active');
+      applyFiltersAndRender();
+      map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM, bearing:0, pitch:0, essential:true });
     };
-}
 
+    (async ()=>{
+      await new Promise(res => map.on('load', res));
+      await loadMapIcons();
+      allCenters = await fetchCenters();
+      buildRegionChips(allCenters);
+      applyFiltersAndRender();
 
-
-
-// 🚀 UPDATED BOOT SEQUENCE: Load icons before rendering the layer
-(async () => {
-  allCenters = await fetchCenters();
-  buildRegionPills(allCenters);
-
-  // Set Global as default filter
-  currentRegionFilter = '';
-
-  // Wait until map fully loads
-  await new Promise(resolve => {
-    if (map.loaded()) resolve();
-    else map.on('load', resolve);
-  });
-
-  await loadMapIcons();
-  applyFiltersAndRender();
-})();
+      // Debug helpers (optional):
+      console.log('centers:', allCenters.length);
+      console.log('touch-detected:', ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+    })();
   </script>
 </body>
 </html>
