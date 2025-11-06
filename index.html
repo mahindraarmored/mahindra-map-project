@@ -121,23 +121,18 @@
   .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-attrib{ order:2; margin:0 !important; background:none; padding:2px 6px; font-size:11px; }
   .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-scale{ display:none !important; }
 
-  
-  
-  /* ... All your existing CSS rules (html, body, .panel, #search-and-toggle-group, etc.) ... */
-
-  /* --- ADD THIS NEW SECTION AT THE END --- */
   @media (max-width: 420px) {
-    /* Target only narrow screens (mobiles) */
-    .panel {
-      /* Override the original left:10px positioning */
-      left: 50% !important;
-      right: auto !important;
-      /* Center the panel horizontally */
-      transform: translateX(-50%) !important;
-    }
+  /* This rule applies ONLY when the screen is 420px wide or narrower (mobile) */
+  .panel {
+    /* Override the original left:10px and right:auto; */
+    left: 50% !important;
+    right: auto !important;
+    /* Center the panel by shifting it back by half its own width */
+    transform: translateX(-50%) !important;
   }
+}
 
-
+  
   
   
   
@@ -452,15 +447,14 @@
       }
 
       // Fly to bounds of filtered set
-if (inBounds.length){
-  const b = new mapboxgl.LngLatBounds();
-  inBounds.forEach(c=>b.extend([c.location.lng, c.location.lat]));
-  try{ map.fitBounds(b, { padding:50, maxZoom:6 }); }catch{}
-} else {
-  map.flyTo({ center:[20,10], zoom:2 }); // This is what runs when no filter is active
-}
-
-
+      if (inBounds.length){
+        const b = new mapboxgl.LngLatBounds();
+        inBounds.forEach(c=>b.extend([c.location.lng, c.location.lat]));
+        try{ map.fitBounds(b, { padding:50, maxZoom:6 }); }catch{}
+      } else {
+        map.flyTo({ center:[20,10], zoom:2 });
+      }
+    }
 
     // Geocoder (countries only)
     const geocoder = new MapboxGeocoder({ accessToken: MAPBOX_TOKEN, mapboxgl, marker:false, placeholder:'Country', proximity:{ longitude:25, latitude:15 } });
@@ -494,6 +488,4 @@ if (inBounds.length){
   </script>
 </body>
 </html>
-
-
 
