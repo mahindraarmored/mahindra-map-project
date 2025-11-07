@@ -39,7 +39,6 @@ body {
     --chip-fs: clamp(12px, 1.1vw, 14px);
 
     /* Estimated Max Height of the Top Panel (Used for positioning other elements) */
-    /* INCREASED FOR SAFETY to prevent overlap on shorter screens */
     --top-panel-max-h: 140px; 
 }
 
@@ -51,7 +50,6 @@ body {
     left: 14px; 
     transform: none; 
     width: min(400px, 90vw); 
-    /* Set padding for the top section (search bar) */
     padding: 10px 14px 0 14px; 
     border-radius: 12px;
     display:flex; flex-direction:column; gap:0; 
@@ -101,11 +99,8 @@ body {
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     white-space: nowrap; 
-    /* Negative margin pulls the scroll area to the panel edge */
     margin: 0 -14px; 
-    /* Internal padding matches panel edge, plus bottom space */
     padding: 0 14px 14px 14px; 
-    /* Hide the scrollbar */
     scrollbar-width: none;
 }
 #chip-scroll-row::-webkit-scrollbar { display: none; }
@@ -140,70 +135,7 @@ body {
  * 3. LEGEND (Toggle Button and Modal)
  * ----------------------------------------------------------- */
 
-/* Legend Toggle Button (Mobile Only) - Positioned from bottom */
-.legend-toggle-container {
-    position: absolute;
-    bottom: 45px; 
-    right: 10px;
-    z-index: 20; /* Increased Z-index to ensure visibility on mobile */
-}
-.legend-toggle-container .mapboxgl-ctrl-icon {
-    width: 29px; height: 29px; padding: 2px;
-}
-
-/* Legend Modal (Mobile Pop-up) */
-.legend-modal {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 10; 
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    padding: 15px;
-    
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    
-    /* Initially hidden for mobile */
-    transform: translateX(100%);
-    transition: transform 0.3s ease-out;
-}
-.legend-modal:not(.hidden) {
-    transform: translateX(0);
-}
-
-.legend-modal-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 8px;
-}
-.legend-modal-header h4 { font-size: 1.1em; font-weight: 600; margin: 0; }
-.legend-modal-header button { background: none; border: none; font-size: 1.5em; cursor: pointer; }
-
-/* Individual Legend Chip Style (full width inside modal) */
-.legend-modal .legend-chip {
-    width: 100%;
-    justify-content: flex-start;
-}
-.legend-chip {
-    flex-shrink: 0; height: var(--chip-h);
-    padding: 0 var(--ctrl-pad-x); font-size: var(--chip-fs); 
-    border-radius: var(--ctrl-radius); border: 1px solid #d0d0d0; background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.06);
-    display: inline-flex; align-items: center; justify-content: center;
-    gap: 6px; line-height: 1; user-select: none;
-}
-.legend-chip img {
-    width: calc(var(--chip-h) * 0.7);
-    height: calc(var(--chip-h) * 0.7);
-    object-fit: contain; flex-shrink: 0;
-}
-
-
-/* -----------------------------------------------------------
- * 4. MAPBOX CONTROLS & POPUPS
- * ----------------------------------------------------------- */
-
-/* Popup styles */
+/* Mapbox Controls and Popups */
 .mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
 .popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
 .popup p{ margin:0; font-size:clamp(12px,1.3vw,14px); line-height:1.35; overflow-wrap:anywhere; }
@@ -226,20 +158,99 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,.06);
 }
 
+/* Toggle Button Icon Styles */
+.legend-toggle-container .mapboxgl-ctrl-icon {
+    width: 29px; height: 29px; padding: 2px;
+}
+
+/* Individual Legend Chip Style (shared between mobile/desktop) */
+.legend-chip {
+    flex-shrink: 0; height: var(--chip-h);
+    padding: 0 var(--ctrl-pad-x); font-size: var(--chip-fs); 
+    border-radius: var(--ctrl-radius); border: 1px solid #d0d0d0; background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; line-height: 1; user-select: none;
+}
+.legend-chip img {
+    width: calc(var(--chip-h) * 0.7);
+    height: calc(var(--chip-h) * 0.7);
+    object-fit: contain; flex-shrink: 0;
+}
+
 
 /* -----------------------------------------------------------
  * 5. MEDIA QUERIES (Responsiveness)
  * ----------------------------------------------------------- */
 
-/* Mobile (<= 420px): Center the Panel */
-@media (max-width: 420px) {
+/* CONSOLIDATED MOBILE STYLES (max-width: 599px)
+   All mobile-specific positioning and pop-up logic is contained here. */
+@media (max-width: 599px) {
+    /* Panel Centering (from previous 420px rule) */
     .panel {
         /* Center the panel on the screen */
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 96vw;
     }
+
+    /* 1. Legend Toggle Button (Mobile Only) - Positioned bottom-left */
+    .legend-toggle-container {
+        /* Ensures the button is visible on mobile */
+        display: block !important; 
+        position: absolute;
+        bottom: 45px; 
+        left: 10px; 
+        right: auto;
+        z-index: 20; 
+    }
+
+    /* 2. Legend Modal (Mobile Pop-up) - Control-style Pop-up from Left-Bottom */
+    .legend-modal {
+        position: absolute;
+        /* Position the modal just above the toggle button */
+        bottom: 80px; 
+        left: 10px;
+        
+        /* Give it a fixed size, similar to a standard map control box */
+        width: 240px;
+        max-width: 90vw;
+        
+        z-index: 10; 
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 12px; 
+        
+        display: flex;
+        flex-direction: column;
+        gap: 8px; 
+        
+        /* Use opacity/visibility for a smooth fade-in/out (inherited by .not(.hidden)) */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    }
+    .legend-modal:not(.hidden) {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Header is visible on mobile pop-up */
+    .legend-modal-header {
+        /* Ensures the header is displayed, overriding the desktop 'display: none' */
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px; 
+    }
+
+    /* Mobile chips should still be full width for readability */
+    .legend-modal .legend-chip {
+        width: 100%;
+    }
 }
+
 
 /* Tablet / Desktop (>= 600px): Legend Fixes and Desktop Layout */
 @media (min-width: 600px) {
@@ -256,8 +267,8 @@ body {
         left: 14px;
         right: auto;
         
-        /* FIX FOR DESKTOP OVERLAP: Constrain height using the new safer variable */
-        max-height: calc(100% - var(--top-panel-max-h) - 70px); 
+        /* FIX FOR DESKTOP OVERLAP: Use a simpler, relative max-height calculation. */
+        max-height: calc(100vh - var(--top-panel-max-h) - 100px); 
         
         /* Reset display to a simple vertical grid */
         width: auto;
@@ -267,9 +278,13 @@ body {
         display: grid;
         gap: 8px;
         
-        /* FIX FOR HIDDEN LEGEND: Ensure it's always visible */
+        /* Ensure it's always visible */
         transform: none !important; 
         transition: none !important;
+
+        /* Forced visibility for desktop permanent display */
+        opacity: 1 !important;
+        visibility: visible !important;
     }
     
     /* 3. Hide the header/close button on large screens */
@@ -282,6 +297,7 @@ body {
         width: auto;
     }
 }
+ 
 </style>
 
 
