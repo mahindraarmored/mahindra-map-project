@@ -16,173 +16,195 @@
   <link href="https://fonts.googleapis.com/css2?family=Georama:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-  html, body, #map { height: 100%; margin: 0; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; overflow-x: hidden; }
+/* 🔑 KEY CHANGE: General Map/Body setup */
+html, body, #map { height: 100%; margin: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; overflow-x: hidden; }
 
-  /* Panel */
-  .panel{
-    position:absolute; top:10px; left:10px; z-index:2; right:auto;
-    min-width:360px; max-width:420px; max-height:calc(100% - 20px);
-    padding:14px; border-radius:12px; background:transparent; display:flex; flex-direction:column; gap:10px;
+/* 🔑 KEY CHANGE: Panel Positioning (Centered, Wide, White Background) */
+.panel{
+    position:absolute; top:10px; z-index:2; 
+    left: 14px; /* Anchor to the left side */
+    transform: none; /* No horizontal centering transform */
+    width: min(400px, 90vw); /* Adjust desktop width for a typical sidebar size */
+    /* Set padding for the top section (search bar) */
+    padding: 10px 14px 0 14px; 
+    /* Give it a solid background and rounded corners like Google Maps */
+    /* background: #fff; */
+    border-radius: 12px;
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.15); */
+    display:flex; flex-direction:column; gap:0; /* Ensure internal elements stack */
     font-family:"Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  }
+}
 
-  :root{
+:root{
+    /* Geocoder/Primary Control Height: clamp(38px, 4.2vw, 46px) */
     --ctrl-h: clamp(38px, 4.2vw, 46px);
     --ctrl-pad-x: clamp(10px, 1.2vw, 16px);
     --ctrl-radius: 9999px;
     --ctrl-fs: clamp(12px, 1.1vw, 15px);
     --input-fs: clamp(14px, 1.2vw, 16px);
     --icon-left: 14px;
-  }
 
-  /* MODIFIED: Stack elements vertically */
-  #search-and-toggle-group{
+    /* Chip Height (2/3 of search bar) */
+    --chip-h: calc(var(--ctrl-h) * 0.75); /* Slight bump for touch targets */
+    --chip-fs: clamp(12px, 1.1vw, 14px);
+    --chip-pad-y: 0; /* No vertical padding, let height define size */
+}
+
+/* 🔑 KEY CHANGE: Search and Reset Button Row (Flex) */
+#search-and-controls-group{
     display:flex;
-    flex-direction: column; /* KEY CHANGE */
     align-items:center;
     gap:10px;
-    width: 100%; /* Ensure it spans the panel width */
-  }
-
-  /* MODIFIED: Ensure geocoder container is full width */
-  #geocoder-container{
-    flex: none; /* KEY CHANGE: Removed flex:1 1 auto */
-    width: 100%; /* KEY CHANGE */
-    min-width:0;
-  }
-  #geocoder-container .mapboxgl-ctrl-geocoder{
-    display:flex; align-items:center;
-  width:100% !important; /* IMPORTANT: Override Mapbox's default inline or computed width */
-  height:var(--ctrl-h); min-height:var(--ctrl-h);
-  border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,.06);
+    width: 100%;
+    padding-bottom: 10px; /* Space between search and chips */
 }
-  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input{
+
+/* MODIFIED: Ensure geocoder container takes available space */
+#geocoder-container{
+    flex: 1 1 auto; /* Takes remaining space */
+    min-width:0;
+}
+#geocoder-container .mapboxgl-ctrl-geocoder{
+    width:100% !important;
+    height:var(--ctrl-h); min-height:var(--ctrl-h);
+    border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
+    box-shadow:none; /* Remove shadow here, the panel has one */
+}
+#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input{
     height:calc(var(--ctrl-h) - 2px);
     line-height:calc(var(--ctrl-h) - 2px);
     font-size:var(--input-fs);
     padding:0 var(--ctrl-pad-x) 0 calc(var(--icon-left) + 24px);
     box-sizing:border-box;
-  }
-  #geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon{
+}
+#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon{
     left:var(--icon-left); top:50%; transform:translateY(-50%);
-  }
+}
 
-  /* MODIFIED: Ensure right button group is full width */
-  #right-button-group{
-    display:flex;
-    align-items: flex-start !important;
-    gap:10px;
-    width: 100%; /* KEY CHANGE */
-  }
-
-  #regionChips{ flex: 1 1 auto; display:flex; gap:8px; flex-wrap: wrap;  /* <--- KEY CHANGE: Allow chips to wrap to new lines */
-    justify-content: center; align-items: flex-start; } /* Added flex:1 1 auto to let chips take space */
-  .region-chip{
-    height:var(--ctrl-h); padding:0 var(--ctrl-pad-x);
-    border-radius:var(--ctrl-radius); border:1px solid #d0d0d0; background:#fff;
-    box-shadow:0 1px 2px rgba(0,0,0,.06);
-     align-items:center; justify-content:center;
-    font-size:var(--ctrl-fs); line-height:1; cursor:pointer; user-select:none;
-    transition:background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
-  }
-  .region-chip:hover{ background:#ee5b71; border-color:#ee5b71; }
-  .region-chip.active{ background:#e41837; color:#fff; border-color:#e41837; }
-
-  /* Responsive oval reset button */
-  #resetMapBtn{
-    flex-shrink: 0; /* Prevents button from shrinking */
-    height:var(--ctrl-h); padding:0 1.2em; width:auto;
-    border-radius:9999px; border:1px solid #d0d0d0; background:#fff;
-    box-shadow:0 1px 2px rgba(0,0,0,.06);
+/* 🔑 KEY CHANGE: Reset button as a small, secondary action (like the transit button in the image) */
+#resetMapBtn{
+    flex-shrink: 0;
+    width: var(--ctrl-h); /* Make it a square for a clean icon-only look */
+    height:var(--ctrl-h); 
+    border-radius:var(--ctrl-radius); 
+    border:1px solid #d0d0d0; background:#fff;
+    box-shadow:none;
     display:inline-flex; align-items:center; justify-content:center;
     font-weight:600; font-size:var(--ctrl-fs); line-height:1;
     cursor:pointer; user-select:none;
+    transition:background-color .15s ease, color .15s ease, border-color .15s ease;
+    padding: 0; /* Remove padding since it's a square button */
+}
+@media (min-width: 720px){
+    #resetMapBtn:hover{ background:#f0f0f0; }
+}
+
+/* 🔑 KEY CHANGE: Chip Scroll Row (The core change for the Google Maps pattern) */
+#chip-scroll-row {
+    display: flex;
+    overflow-x: auto; /* Allow horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Improved scrolling on iOS */
+    white-space: nowrap; /* Prevent chips from wrapping */
+    
+    /* Negative margin to ensure the scrolling area spans the full panel width */
+    margin: 0 -14px; 
+    padding: 0 14px 14px 14px; /* Internal padding matches panel edge, plus bottom space */
+    
+    /* Hide the scrollbar but keep the function */
+    scrollbar-width: none; /* Firefox */
+}
+#chip-scroll-row::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+
+/* MODIFIED: Chips inside the scroll row */
+#regionChips{
+    display:flex; gap:8px;
+    flex: none; /* Do not allow flex properties to resize the chip container */
+    flex-wrap: nowrap; /* Essential: Prevents chips from wrapping */
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.region-chip{
+    flex-shrink: 0; /* Essential: Prevents chips from shrinking */
+    
+    /* Use the smaller chip height and font size */
+    height:var(--chip-h);
+    padding:0 var(--ctrl-pad-x);
+    font-size:var(--chip-fs); 
+    
+    border-radius:var(--ctrl-radius); 
+    border:1px solid #d0d0d0; background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    display:inline-flex; align-items:center; justify-content:center;
+    line-height:1; cursor:pointer; user-select:none;
     transition:background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
-    align-self: center;
-  }
-    @media (min-width: 720px){
-  #resetMapBtn:hover{ background:#000000; }
-    }
-  /* Popup styles */
-  .mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
-  .popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
-  .popup p{ margin:0; font-size:clamp(12px,1.3vw,14px); line-height:1.35; overflow-wrap:anywhere; }
-  .contact-buttons{ display:flex; gap:10px; margin-top:12px; margin-bottom:10px; justify-content:center; padding-bottom:10px; }
-  .contact-buttons a{
+}
+.region-chip:hover{ background:#f0f0f0;; border-color:#f0f0f0; }
+.region-chip.active{ background:#e41837; color:#fff; border-color:#e41837; }
+
+
+/* --- Mapbox Controls and Popups (No major changes needed here) --- */
+
+/* Popup styles */
+.mapboxgl-popup-content{ padding:10px; max-width:min(90vw, 420px); padding-bottom:12px; }
+.popup h3{ margin:0 0 4px; font-size:clamp(14px,1.5vw,18px); }
+.popup p{ margin:0; font-size:clamp(12px,1.3vw,14px); line-height:1.35; overflow-wrap:anywhere; }
+.contact-buttons{ display:flex; gap:10px; margin-top:12px; margin-bottom:10px; justify-content:center; padding-bottom:10px; }
+.contact-buttons a{
     display:inline-block; padding:6px 10px; border-radius:9999px; text-decoration:none;
     font-weight:700; background:#fff; color:#E41837; border:1px solid #E41837;
     transition:background-color .2s, color .2s, border-color .2s;
-  }
-  .contact-buttons a:hover{ background:#E41837; color:#fff; }
-
-  /* Mapbox controls: put attribution bottom-left */
-  .mapboxgl-ctrl-bottom-left{
-    position:absolute; left:14px; bottom:14px; display:flex !important; flex-direction:column-reverse !important; gap:6px;
-  }
-  .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-attrib{ order:2; margin:0 !important; background:none; padding:2px 6px; font-size:11px; }
-  .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-scale{ display:none !important; }
-
-  @media (max-width: 420px) {
-  /* This rule applies ONLY when the screen is 420px wide or narrower (mobile) */
-  .panel {
-    /* Override the original left:10px and right:auto; */
-    left: 50% !important;
-    right: auto !important;
-    /* Center the panel by shifting it back by half its own width */
-    transform: translateX(-50%) !important;
-  }
 }
+.contact-buttons a:hover{ background:#E41837; color:#fff; }
 
-  .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
+/* Mapbox controls: put attribution bottom-left */
+.mapboxgl-ctrl-bottom-left{
+    position:absolute; left:14px; bottom:14px; display:flex !important; flex-direction:column-reverse !important; gap:6px;
+}
+.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-attrib{ order:2; margin:0 !important; background:none; padding:2px 6px; font-size:11px; }
+.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl-scale{ display:none !important; }
+
+.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
     margin-bottom: 10px;
     box-shadow: 0 1px 2px rgba(0,0,0,.06);
-  }
-  
-  @media (max-width: 420px) {
-  /* This rule applies ONLY when the screen is 420px wide or narrower (mobile) */
-  .panel {
-    /* Existing centering logic */
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-  }
-  
-  /* REVERTED: Ensure the chip group and reset button remain in a row */
-  #right-button-group {
-    /* Revert to the default row layout for the container */
-    flex-direction: row; 
-    justify-content: center; /* Center the group horizontally */
-    flex-wrap: wrap; /* Allow the entire group to wrap if needed */
-  }
-
-  /* REVERTED: Remove 100% width from these items */
-  #regionChips, #resetMapBtn {
-    width: auto !important;
-  }
-  
-  /* Optional: Tweak the reset button to look better on mobile */
-  #resetMapBtn {
-    /* Keep its flex-shrink: 0, but remove the 100% width from the previous fix */
-    flex-shrink: 0;
-  }
 }
- 
-  </style>
+
+/* 🔑 KEY CHANGE: Mobile (<= 420px) is CENTERED */
+@media (max-width: 420px) {
+    .panel {
+        /* Override the desktop 'left' position */
+        left: 50% !important;
+        /* Center the panel by shifting it back by half its own width */
+        transform: translateX(-50%) !important;
+        /* Ensure it takes up most of the screen width on mobile */
+        width: 96vw;
+    }
+    
+    /* Optional: Hide the scrollbar in the chip row for a cleaner mobile look */
+    #chip-scroll-row {
+        scrollbar-width: none; /* Firefox */
+    }
+    #chip-scroll-row::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+}
+</style>
 </head>
 <body>
 
   <div class="panel" aria-label="Search and Filters">
-    <div class="panel" aria-label="Search and Filters">
-  <div id="search-and-toggle-group">
+  <div id="search-and-controls-group"> 
     <div id="geocoder-container"></div>
-    <div id="right-button-group"> <div id="regionChips" aria-label="Regions"></div> <button id="resetMapBtn" title="Reset map">⟲</button> </div>
+    <button id="resetMapBtn" title="Reset map">⟲</button> 
+  </div>
+  <div id="chip-scroll-row"> 
+    <div id="regionChips" aria-label="Regions"></div>
   </div>
 </div>
-  </div>
-
-  <div id="map" role="region" aria-label="Global Service Network"></div>
+<div id="map" role="region" aria-label="Global Service Network"></div>
 
   <script>
     // ===== CONFIG =====
@@ -560,14 +582,18 @@ function hoverHTML(p){
     });
     document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map));
 
-    // Reset
-    document.getElementById('resetMapBtn').onclick = ()=>{
-      currentRegionFilter = '';
-      document.querySelectorAll('#regionChips .region-chip').forEach(b=>b.classList.remove('active'));
-      const globalBtn = document.querySelector('#regionChips .region-chip[data-region=""]'); if (globalBtn) globalBtn.classList.add('active');
-      applyFiltersAndRender();
-      map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM, bearing:0, pitch:0, essential:true });
-    };
+   // Reset
+document.getElementById('resetMapBtn').onclick = ()=>{
+    currentRegionFilter = '';
+    
+    // 🔑 KEY CHANGE: Add this line to clear the geocoder input field
+    geocoder.clear(); 
+    
+    document.querySelectorAll('#regionChips .region-chip').forEach(b=>b.classList.remove('active'));
+    const globalBtn = document.querySelector('#regionChips .region-chip[data-region=""]'); if (globalBtn) globalBtn.classList.add('active');
+    applyFiltersAndRender();
+    map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM, bearing:0, pitch:0, essential:true });
+};
 
     (async ()=>{
       await new Promise(res => map.on('load', res));
@@ -584,21 +610,3 @@ function hoverHTML(p){
   <script src="sidebar.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
