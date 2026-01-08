@@ -65,3 +65,24 @@ if (fs.existsSync(INPUT_CONFIG)) {
 }
 
 console.log(`🚀 Build complete. The "dist" folder is ready for deployment.`);
+
+// ... [Keep your existing build.js code until Step 2] ...
+
+if (fs.existsSync(INPUT_CONFIG)) {
+    let configContent = fs.readFileSync(INPUT_CONFIG, 'utf8');
+    const finalConfig = configContent.replace(/%%MAPBOX_TOKEN%%/g, MAPBOX_TOKEN);
+    fs.writeFileSync(OUTPUT_CONFIG, finalConfig);
+    console.log(`✅ Config.js secured`);
+
+    // --- ADD THIS: Copy app.js ---
+    const INPUT_APP = path.join(__dirname, 'js', 'app.js');
+    const OUTPUT_APP = path.join(JS_DIST_DIR, 'app.js');
+    if (fs.existsSync(INPUT_APP)) fs.copyFileSync(INPUT_APP, OUTPUT_APP);
+
+    // --- ADD THIS: Copy CSS folder ---
+    const CSS_DIST_DIR = path.join(OUTPUT_DIR, 'components');
+    if (!fs.existsSync(CSS_DIST_DIR)) fs.mkdirSync(CSS_DIST_DIR);
+    const INPUT_CSS = path.join(__dirname, 'components', 'style.css');
+    const OUTPUT_CSS = path.join(CSS_DIST_DIR, 'style.css');
+    if (fs.existsSync(INPUT_CSS)) fs.copyFileSync(INPUT_CSS, OUTPUT_CSS);
+}
