@@ -17,6 +17,10 @@ export const REGION_LABEL = {
     EMEA: '🌍 EMEA: Europe, Middle East, Africa',
     APAC: '🌏 APAC: Asia Pacific (Asia + Oceania)'
 };
+export const ICON_MAP = {
+  fullCapabilityHub: 'manufacturing-icon',
+  supportCenter: 'support-icon'
+};
 
 export const GLOBAL_TITLE = 'View All Regions Worldwide';
 
