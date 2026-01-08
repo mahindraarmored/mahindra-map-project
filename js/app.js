@@ -202,7 +202,10 @@ function applyFiltersAndRender() {
         type: 'FeatureCollection',
         features: allCenters.map(c => ({
           type: 'Feature',
-          properties: { ...c, serviceKey: c.services },
+          properties: { 
+  ...c, 
+  serviceKey: c.services || 'supportCenter' 
+},
           geometry: {
             type: 'Point',
             coordinates: [c.location.lng, c.location.lat]
