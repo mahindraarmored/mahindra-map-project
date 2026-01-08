@@ -48,3 +48,20 @@ if (fs.existsSync(INPUT_CONFIG)) {
 }
 
 console.log(`🚀 Build complete. The "dist" folder is ready for deployment.`);
+
+if (fs.existsSync(INPUT_CONFIG)) {
+    let configContent = fs.readFileSync(INPUT_CONFIG, 'utf8');
+    const finalConfig = configContent.replace(/%%MAPBOX_TOKEN%%/g, MAPBOX_TOKEN);
+    fs.writeFileSync(OUTPUT_CONFIG, finalConfig);
+    console.log(`✅ Config.js secured: ${OUTPUT_CONFIG}`);
+
+    // --- NEW STEP: COPY APP.JS TO DIST ---
+    const INPUT_APP = path.join(__dirname, 'js', 'app.js');
+    const OUTPUT_APP = path.join(JS_DIST_DIR, 'app.js');
+    if (fs.existsSync(INPUT_APP)) {
+        fs.copyFileSync(INPUT_APP, OUTPUT_APP);
+        console.log(`✅ app.js copied to dist`);
+    }
+}
+
+console.log(`🚀 Build complete. The "dist" folder is ready for deployment.`);
