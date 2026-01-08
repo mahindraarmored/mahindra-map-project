@@ -3,13 +3,23 @@
  * Extracted from the original Mahindra Emirates Vehicle Armouring network map.
  */
 
-// 1. API & Access
-export const MAPBOX_TOKEN = '%%MAPBOX_TOKEN%%';
+// js/config.js
+export const MAPBOX_TOKEN = '%%MAPBOX_TOKEN%%'; 
 export const HYGRAPH_ENDPOINT = 'https://ap-south-1.cdn.hygraph.com/content/cmfpk332g005s08uylh0ezd8a/master';
 
-// 2. Map Constants
 export const INITIAL_MAP_CENTER = [25.0, 15.0];
 export const INITIAL_MAP_ZOOM = 2.5;
+
+export const ICON_MAP = {
+  fullCapabilityHub: 'manufacturing-icon',
+  supportCenter: 'support-icon'
+};
+
+// Red Circle (Manufacturing)
+export const MANUFACTURING_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiNlNDE4MzciIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
+// Blue Circle (Support)
+export const SUPPORT_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMwMDVlYmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
+
 
 // 3. Labels & Mappings
 export const REGION_LABEL = {
@@ -17,10 +27,7 @@ export const REGION_LABEL = {
     EMEA: '🌍 EMEA: Europe, Middle East, Africa',
     APAC: '🌏 APAC: Asia Pacific (Asia + Oceania)'
 };
-export const ICON_MAP = {
-  fullCapabilityHub: 'manufacturing-icon',
-  supportCenter: 'support-icon'
-};
+
 
 export const GLOBAL_TITLE = 'View All Regions Worldwide';
 
@@ -37,10 +44,6 @@ export const SERVICE_ICON_MAP = {
     'AV Disposals': '♻️',
     'AV Service Support': '🛠️'
 };
-
-// Simple, lightweight SVG pins
-export const MANUFACTURING_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiNlNDE4MzciIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
-export const SUPPORT_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMwMDVlYmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
 
 // 5. SVG Assets
 export const EMAIL_SVG = `
