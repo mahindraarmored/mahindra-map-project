@@ -38,9 +38,9 @@ export const SERVICE_ICON_MAP = {
     'AV Service Support': '🛠️'
 };
 
-// 4. Asset Base64 Data (Placeholders for your specific strings)
-export const MANUFACTURING_BASE64 = 'source'; // Replace 'source' with your full manufacturing-icon string
-export const SUPPORT_BASE64 = 'source';       // Replace 'source' with your full support-icon string
+// Simple, lightweight SVG pins
+export const MANUFACTURING_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiNlNDE4MzciIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
+export const SUPPORT_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzAiIGZpbGw9IiMwMDVlYmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg==';
 
 // 5. SVG Assets
 export const EMAIL_SVG = `
