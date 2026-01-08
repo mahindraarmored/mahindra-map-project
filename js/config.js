@@ -4,7 +4,7 @@
  */
 
 // 1. API & Access
-export const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
+export const MAPBOX_TOKEN = '%%MAPBOX_TOKEN%%';
 export const HYGRAPH_ENDPOINT = 'https://api-ap-south-1.hygraph.com/v2/cmfpk332g005s08uylh0ezd8a/master';
 
 // 2. Map Constants
