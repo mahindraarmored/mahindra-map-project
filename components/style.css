@@ -1,0 +1,239 @@
+/* -----------------------------------------------------------
+ * 1. ROOT VARIABLES & GENERAL SETUP
+ * ----------------------------------------------------------- */
+html, body, #map { 
+    height: 100%; 
+    margin: 0; 
+}
+
+body { 
+    font-family: "Georama", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; 
+    overflow-x: hidden; 
+}
+
+:root {
+    /* Primary Control Dimensions (Search/Reset Button) */
+    --ctrl-h: clamp(38px, 4.2vw, 46px);
+    --ctrl-pad-x: clamp(10px, 1.2vw, 16px);
+    --ctrl-radius: 9999px;
+    --ctrl-fs: clamp(12px, 1.1vw, 15px);
+    --input-fs: clamp(14px, 1.2vw, 16px);
+    --icon-left: 14px;
+
+    /* Chip Dimensions (Filter/Legend Chips) */
+    --chip-h: calc(var(--ctrl-h) * 0.75);
+    --chip-fs: clamp(12px, 1.1vw, 14px);
+
+    /* Estimated Max Height of the Top Panel */
+    --top-panel-max-h: 140px; 
+}
+
+/* -----------------------------------------------------------
+ * 2. TOP PANEL (Search & Chips)
+ * ----------------------------------------------------------- */
+.panel {
+    position: absolute; 
+    top: 10px; 
+    z-index: 2; 
+    left: 14px; 
+    width: min(400px, 90vw); 
+    padding: 10px 14px 0 14px; 
+    border-radius: 12px;
+    display: flex; 
+    flex-direction: column; 
+    gap: 0; 
+}
+
+#search-and-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-bottom: 10px; 
+}
+
+/* Geocoder Overrides */
+#geocoder-container { flex: 1 1 auto; min-width: 0; }
+#geocoder-container .mapboxgl-ctrl-geocoder {
+    width: 100% !important; 
+    height: var(--ctrl-h); 
+    min-height: var(--ctrl-h);
+    border-radius: var(--ctrl-radius); 
+    border: 1px solid #d0d0d0; 
+    background: #fff;
+    box-shadow: none; 
+}
+
+#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--input {
+    height: calc(var(--ctrl-h) - 2px); 
+    line-height: calc(var(--ctrl-h) - 2px);
+    font-size: var(--input-fs); 
+    box-sizing: border-box;
+    padding: 0 var(--ctrl-pad-x) 0 calc(var(--icon-left) + 24px);
+}
+
+#geocoder-container .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon {
+    left: var(--icon-left); 
+    top: 50%; 
+    transform: translateY(-50%);
+}
+
+/* Reset button */
+#resetMapBtn {
+    flex-shrink: 0; 
+    width: var(--ctrl-h); 
+    height: var(--ctrl-h); 
+    border-radius: var(--ctrl-radius); 
+    border: 1px solid #d0d0d0; 
+    background: #fff;
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    font-weight: 600; 
+    font-size: var(--ctrl-fs); 
+    cursor: pointer; 
+    transition: background-color .15s ease;
+}
+
+#resetMapBtn:hover { background: #f0f0f0; }
+
+/* Region Filter Chips */
+#chip-scroll-row {
+    display: flex;
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+    margin: 0 -14px; 
+    padding: 0 14px 14px 14px; 
+    scrollbar-width: none;
+}
+#chip-scroll-row::-webkit-scrollbar { display: none; }
+
+#regionChips { display: flex; gap: 8px; flex: none; }
+
+.region-chip {
+    height: var(--chip-h);
+    padding: 0 var(--ctrl-pad-x);
+    font-size: var(--chip-fs); 
+    border-radius: var(--ctrl-radius); 
+    border: 1px solid #d0d0d0; 
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+    display: inline-flex; 
+    align-items: center; 
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.region-chip.active { background: #e41837; color: #fff; border-color: #e41837; }
+
+/* -----------------------------------------------------------
+ * 3. MAP COMPONENTS (Popups & Controls)
+ * ----------------------------------------------------------- */
+.mapboxgl-popup-content { 
+    padding: 10px; 
+    max-width: min(90vw, 420px); 
+    padding-bottom: 12px; 
+}
+
+.popup h3 { margin: 0 0 4px; font-size: clamp(14px, 1.5vw, 18px); }
+.popup p { margin: 0; font-size: clamp(12px, 1.3vw, 14px); line-height: 1.35; }
+
+.contact-buttons { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 12px; 
+    justify-content: center; 
+}
+
+.contact-buttons a {
+    padding: 6px 10px; 
+    border-radius: 9999px; 
+    text-decoration: none;
+    font-weight: 700; 
+    background: #fff; 
+    color: #E41837; 
+    border: 1px solid #E41837;
+    transition: 0.2s;
+}
+
+.contact-buttons a:hover { background: #E41837; color: #fff; }
+
+/* Legend Chip Styles */
+.legend-chip {
+    flex-shrink: 0; 
+    height: var(--chip-h);
+    padding: 0 var(--ctrl-pad-x); 
+    font-size: var(--chip-fs); 
+    border-radius: var(--ctrl-radius); 
+    border: 1px solid #d0d0d0; 
+    background: #fff;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px;
+}
+
+.legend-chip img {
+    width: calc(var(--chip-h) * 0.7);
+    height: calc(var(--chip-h) * 0.7);
+    object-fit: contain;
+}
+
+/* -----------------------------------------------------------
+ * 4. MEDIA QUERIES
+ * ----------------------------------------------------------- */
+
+/* Mobile (< 600px) */
+@media (max-width: 599px) {
+    .panel {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 96vw;
+    }
+
+    .legend-toggle-container {
+        display: block !important; 
+        position: absolute;
+        bottom: 45px; 
+        left: 10px; 
+        z-index: 20; 
+    }
+
+    .legend-modal {
+        position: absolute;
+        bottom: 80px; 
+        left: 10px;
+        width: 240px;
+        background: white;
+        border-radius: 8px;
+        padding: 12px; 
+        display: flex;
+        flex-direction: column;
+        gap: 8px; 
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+    }
+
+    .legend-modal:not(.hidden) { opacity: 1; visibility: visible; }
+    
+    .legend-modal-header { display: flex !important; justify-content: space-between; }
+    .legend-modal .legend-chip { width: 100%; }
+}
+
+/* Desktop (>= 600px) */
+@media (min-width: 600px) {
+    .legend-toggle-container { display: none !important; }
+
+    .legend-modal {
+        position: absolute;
+        bottom: 50px; 
+        left: 14px;
+        max-height: calc(100vh - var(--top-panel-max-h) - 100px); 
+        display: grid;
+        gap: 8px;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    .legend-modal-header { display: none !important; }
+}
