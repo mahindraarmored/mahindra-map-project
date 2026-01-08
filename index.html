@@ -55,25 +55,8 @@
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
 
-  <script type="module" src="../js/app.js"></script>
+  <script type="module" src="js/app.js"></script>
 
-  <script>
-    /**
-     * Inline UI Logic for Legend Toggle
-     * (Kept here for simple DOM manipulation that doesn't require app data)
-     */
-    const legendModal = document.getElementById('legend-modal');
-    const toggleBtn = document.getElementById('legendToggleBtn');
-    const closeBtn = document.getElementById('closeLegendBtn');
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => legendModal.classList.toggle('hidden'));
-    }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => legendModal.classList.add('hidden'));
-    }
-  </script>
 </body>
 </html>
-
-
