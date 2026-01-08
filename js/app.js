@@ -1,25 +1,17 @@
-// js/app.js
-import {
-  MAPBOX_TOKEN,
-  HYGRAPH_ENDPOINT,
-  INITIAL_MAP_CENTER,
-  INITIAL_MAP_ZOOM,
-  REGION_LABEL,
-  SERVICE_LABEL,
-  SERVICE_ICON_MAP,
-  ICON_MAP,
-  MANUFACTURING_BASE64,
+import { 
+  MAPBOX_TOKEN, 
+  HYGRAPH_ENDPOINT, 
+  INITIAL_MAP_CENTER, 
+  INITIAL_MAP_ZOOM, 
+  ICON_MAP, 
+  MANUFACTURING_BASE64, 
   SUPPORT_BASE64,
   EMAIL_SVG,
   WHATSAPP_SVG
 } from './config.js';
 
-/* =========================
-   MAP INIT
-========================= */
-
+// 1. Initialize Map
 mapboxgl.accessToken = MAPBOX_TOKEN;
-
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/streets-v12',
@@ -27,308 +19,105 @@ const map = new mapboxgl.Map({
   zoom: INITIAL_MAP_ZOOM
 });
 
-// Controls
-map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-map.addControl(
-  new mapboxgl.GeolocateControl({
-    positionOptions: { enableHighAccuracy: true },
-    trackUserLocation: true,
-    showUserHeading: true
-  }),
-  'bottom-right'
-);
-
-/* =========================
-   ICON LOADING
-========================= */
-
-function loadMapIcons() {
-  return new Promise(resolve => {
-    const icons = [
-      { id: ICON_MAP.fullCapabilityHub, src: MANUFACTURING_BASE64 },
-      { id: ICON_MAP.supportCenter, src: SUPPORT_BASE64 }
-    ];
-
-    let loaded = 0;
-    icons.forEach(({ id, src }) => {
-      map.loadImage(src, (err, img) => {
-        if (!err && img && !map.hasImage(id)) {
-          map.addImage(id, img);
-        }
-        if (++loaded === icons.length) resolve();
+// 2. Load Icons from Base64
+async function loadMapIcons() {
+  const icons = [
+    { id: ICON_MAP.fullCapabilityHub, src: MANUFACTURING_BASE64 },
+    { id: ICON_MAP.supportCenter, src: SUPPORT_BASE64 }
+  ];
+  for (const icon of icons) {
+    await new Promise(res => {
+      map.loadImage(icon.src, (err, img) => {
+        if (!err && img && !map.hasImage(icon.id)) map.addImage(icon.id, img);
+        res();
       });
     });
-  });
+  }
 }
 
-/* =========================
-   DATA FETCHING
-========================= */
-
+// 3. Fetch Data from Hygraph
 async function fetchCenters() {
-  const res = await fetch(HYGRAPH_ENDPOINT, {
+  const response = await fetch(HYGRAPH_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    cache: 'no-store',
     body: JSON.stringify({
-      query: `
-        query {
-          serviceNetworks(stage: PUBLISHED, first: 1000, orderBy: updatedAt_DESC) {
-            id
-            name
-            country
-            region
-            hubID
-            serviceRange
-            phone
-            email
-            location { latitude longitude }
-            image { url }
-          }
+      query: `query {
+        serviceNetworks(first: 100) {
+          id
+          name
+          country
+          region
+          phone
+          email
+          serviceRange
+          location { latitude longitude }
         }
-      `
+      }`
     })
   });
-
-  const json = await res.json();
-  if (!json.data) {
-    console.error('Hygraph error:', json.errors || json);
-    return [];
-  }
-
-  return (json.data.serviceNetworks || [])
-    .filter(c => c.location)
-    .map(c => ({
-      id: c.id,
-      name: c.name,
-      country: c.country || '',
-      region: c.region || '',
-      hubID: c.hubID || '',
-      phone: c.phone || '',
-      email: c.email || '',
-      services: c.serviceRange,
-      logo: c.image?.url || '',
-      location: { lat: c.location.latitude, lng: c.location.longitude }
-    }));
+  const json = await response.json();
+  return json.data.serviceNetworks;
 }
 
-/* =========================
-   UI HELPERS
-========================= */
-
-const normalizePhone = s => (s || '').replace(/[^\d]/g, '');
-
-function getServiceIconsHTML(p) {
-  const data = SERVICE_LABEL[p.serviceKey];
-  const items = Array.isArray(data) ? data : data ? [data] : [];
-  return items
-    .map(label => SERVICE_ICON_MAP[label])
-    .filter(Boolean)
-    .map(sym => `<span aria-hidden="true">${sym}</span>`)
-    .join('');
-}
-
-function hoverHTML(p) {
-  const wa = normalizePhone(p.phone) || '971527118654';
-  const waHref = `https://wa.me/${wa}?text=${encodeURIComponent(
-    `Hub ID: ${p.hubID || 'N/A'}`
-  )}`;
-
-  const mailHref = `mailto:${p.email || 'support@mahindraarmored.com'}`;
-
-  return `
-    <div class="hover-card">
-      <strong>${p.country}</strong>
-      <div>${getServiceIconsHTML(p)}</div>
-      <div class="actions">
-        <a href="${waHref}" target="_blank">${WHATSAPP_SVG}</a>
-        <a href="${mailHref}">${EMAIL_SVG}</a>
-      </div>
-    </div>
-  `;
-}
-
-function popupHTML(p) {
-  const wa = normalizePhone(p.phone) || '971527118654';
-  return `
-    <div class="popup">
-      ${p.logo ? `<img src="${p.logo}" />` : ''}
-      <p><strong>${p.country}</strong></p>
-      ${
-        Array.isArray(SERVICE_LABEL[p.serviceKey])
-          ? `<ul>${SERVICE_LABEL[p.serviceKey]
-              .map(i => `<li>${i}</li>`)
-              .join('')}</ul>`
-          : `<p>${SERVICE_LABEL[p.serviceKey] || ''}</p>`
-      }
-      <div class="contact-buttons">
-        <a href="https://wa.me/${wa}" target="_blank">WhatsApp</a>
-        <a href="mailto:${p.email || 'support@mahindraarmored.com'}">Email</a>
-      </div>
-    </div>
-  `;
-}
-
-/* =========================
-   STATE & FILTERING
-========================= */
-
-let allCenters = [];
-let currentRegionFilter = '';
-let hoverPopup = null;
-let hoverTimer = null;
-let detailOpen = false;
-
-function cleanupHover() {
-  if (hoverTimer) clearTimeout(hoverTimer);
-  hoverPopup?.remove();
-  hoverPopup = null;
-  map.getCanvas().style.cursor = '';
-}
-
-['dragstart', 'zoomstart', 'movestart', 'styledata'].forEach(ev =>
-  map.on(ev, cleanupHover)
-);
-
-function applyFiltersAndRender() {
-  const filtered = allCenters.filter(
-    c => !currentRegionFilter || c.region === currentRegionFilter
-  );
-
-  if (!map.getSource('svc')) {
-    map.addSource('svc', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: allCenters.map(c => ({
-          type: 'Feature',
-          properties: { 
-  ...c, 
-  serviceKey: c.services || 'supportCenter' 
-},
-          geometry: {
-            type: 'Point',
-            coordinates: [c.location.lng, c.location.lat]
-          }
-        }))
-      }
-    });
-
-    map.addLayer({
-      id: 'points',
-      type: 'symbol',
-      source: 'svc',
-      layout: {
-        'icon-image': [
-          'case',
-          ['==', ['get', 'serviceKey'], 'fullCapabilityHub'],
-          ICON_MAP.fullCapabilityHub,
-          ICON_MAP.supportCenter
-        ],
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 3, 0.03, 10, 0.12],
-        'icon-allow-overlap': true
-      }
-    });
-
-    map.on('click', 'points', e => {
-      detailOpen = true;
-      new mapboxgl.Popup()
-        .setLngLat(e.features[0].geometry.coordinates)
-        .setHTML(popupHTML(e.features[0].properties))
-        .addTo(map)
-        .on('close', () => (detailOpen = false));
-    });
-
-    map.on('mouseenter', 'points', e => {
-      if (detailOpen) return;
-      map.getCanvas().style.cursor = 'pointer';
-      hoverPopup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        offset: 14
-      })
-        .setLngLat(e.features[0].geometry.coordinates)
-        .setHTML(hoverHTML(e.features[0].properties))
-        .addTo(map);
-    });
-
-    map.on('mouseleave', 'points', () => {
-      hoverTimer = setTimeout(cleanupHover, 120);
-    });
-  }
-
-  if (filtered.length) {
-    const b = new mapboxgl.LngLatBounds();
-    filtered.forEach(c => b.extend([c.location.lng, c.location.lat]));
-    map.fitBounds(b, { padding: 50, maxZoom: 6 });
-  }
-}
-
-/* =========================
-   REGION CHIPS
-========================= */
-
-function buildRegionChips(list) {
-  const el = document.getElementById('regionChips');
-  const order = ['AMER', 'EMEA', 'APAC'];
-  const regions = [...new Set(list.map(c => c.region))]
-    .filter(Boolean)
-    .sort((a, b) => order.indexOf(a) - order.indexOf(b));
-
-  el.innerHTML = regions
-    .map(
-      r =>
-        `<button class="region-chip" data-region="${r}">
-          ${(REGION_LABEL[r] || r).split(':')[0]}
-        </button>`
-    )
-    .join('');
-
-  el.onclick = e => {
-    const btn = e.target.closest('.region-chip');
-    if (!btn) return;
-    currentRegionFilter = btn.dataset.region;
-    el.querySelectorAll('.region-chip').forEach(b =>
-      b.classList.remove('active')
-    );
-    btn.classList.add('active');
-    applyFiltersAndRender();
-  };
-}
-
-/* =========================
-   INIT
-========================= */
-
-const geocoder = new MapboxGeocoder({
-  accessToken: MAPBOX_TOKEN,
-  mapboxgl,
-  marker: false,
-  placeholder: 'Search MEVA Hubs'
-});
-
-document.getElementById('geocoder-container').appendChild(
-  geocoder.onAdd(map)
-);
-
-document.getElementById('resetMapBtn').onclick = () => {
-  currentRegionFilter = '';
-  geocoder.clear();
-  document
-    .querySelectorAll('.region-chip')
-    .forEach(b => b.classList.remove('active'));
-  applyFiltersAndRender();
-  map.flyTo({ center: INITIAL_MAP_CENTER, zoom: INITIAL_MAP_ZOOM });
-};
-
-(async () => {
-  await new Promise(res => map.on('load', res));
+// 4. Main App Logic
+map.on('load', async () => {
   await loadMapIcons();
+  const centers = await fetchCenters();
 
-  document.getElementById('legend-icon-mfg').src = MANUFACTURING_BASE64;
-  document.getElementById('legend-icon-support').src = SUPPORT_BASE64;
+  map.addSource('svc', {
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: centers.map(c => ({
+        type: 'Feature',
+        geometry: { 
+          type: 'Point', 
+          coordinates: [c.location.longitude, c.location.latitude] 
+        },
+        properties: { 
+          ...c, 
+          serviceKey: c.serviceRange // Logic to decide which icon to show
+        }
+      }))
+    }
+  });
 
-  allCenters = await fetchCenters();
-  buildRegionChips(allCenters);
-  applyFiltersAndRender();
-})();
+  map.addLayer({
+    id: 'points',
+    type: 'symbol',
+    source: 'svc',
+    layout: {
+      'icon-image': [
+        'case',
+        ['==', ['get', 'serviceKey'], 'fullCapabilityHub'], ICON_MAP.fullCapabilityHub,
+        ICON_MAP.supportCenter
+      ],
+      'icon-size': 0.6, // Visible size for pins
+      'icon-allow-overlap': true
+    }
+  });
+
+  // 5. Click for Popup (WhatsApp/Email)
+  map.on('click', 'points', (e) => {
+    const p = e.features[0].properties;
+    const coordinates = e.features[0].geometry.coordinates.slice();
+
+    new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML(`
+        <div style="padding:10px; font-family:sans-serif;">
+          <h3 style="margin:0 0 5px 0;">${p.country}</h3>
+          <p style="font-size:12px; margin-bottom:10px;">${p.name}</p>
+          <div style="display:flex; gap:10px;">
+            <a href="https://wa.me/${p.phone}" target="_blank" style="text-decoration:none;">${WHATSAPP_SVG}</a>
+            <a href="mailto:${p.email}" style="text-decoration:none;">${EMAIL_SVG}</a>
+          </div>
+        </div>
+      `)
+      .addTo(map);
+  });
+
+  // Change cursor on hover
+  map.on('mouseenter', 'points', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'points', () => map.getCanvas().style.cursor = '');
+});
