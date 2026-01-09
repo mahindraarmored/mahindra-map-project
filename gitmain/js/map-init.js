@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. AWAIT the data fetch so 'allCenters' is NOT empty
     window.allCenters = await fetchServiceHubs(); 
+console.log('HUB COUNT:', window.allCenters.length);
 
     // 4. Only render once data and icons are confirmed ready
     if (window.allCenters.length > 0) {
@@ -187,4 +188,5 @@ window.setFilter = (f) => {
     window.currentFilter = window.currentFilter === f ? '' : f;
     buildRegionChips();
     render();
+
 };
