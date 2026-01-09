@@ -1,0 +1,142 @@
+/* --- GLOBAL RESET & TYPOGRAPHY --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #f8fafc; /* Matches Google Light Blue theme */
+}
+
+/* --- MAP CANVAS --- */
+#map {
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+/* --- FLOATING CONTROL PANEL --- */
+.main-search-container {
+    pointer-events: none; /* Allows map interaction through the container */
+}
+
+#search-and-toggle-group {
+    pointer-events: auto; /* Re-enables interaction for buttons/search */
+}
+
+/* Custom Scrollbar for Region Chips */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* --- REGION CHIPS (Interactive Legend) --- */
+.region-chip {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.region-chip:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.region-chip.active {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* --- CONTEXTUAL SIDEBAR (Profile Card) --- */
+#info-sidebar {
+    will-change: transform;
+    pointer-events: auto;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth Google-style slide */
+}
+
+#info-sidebar.open {
+    transform: translateX(0);
+}
+
+.hub-hero-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #f1f5f9;
+}
+
+/* --- LOADING SKELETONS --- */
+.skeleton {
+    background: #e2e8f0;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    to { background-position-x: -200%; }
+}
+
+.sk-circle {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 10px;
+}
+
+.sk-text {
+    height: 14px;
+    width: 90%;
+    margin-bottom: 8px;
+}
+
+/* --- MAPBOX CUSTOMIZATION --- */
+.mapboxgl-ctrl-geocoder {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    background-color: #f8fafc !important;
+}
+
+/* --- MOBILE ADAPTATION --- */
+@media (max-width: 640px) {
+    .main-search-container {
+        width: calc(100% - 40px);
+        left: 20px;
+        top: 10px;
+    }
+    
+    #info-sidebar {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        margin-top: 0;
+        width: 100%;
+        max-height: 65%;
+        transform: translateY(100%); /* Slides up from bottom on mobile */
+        border-radius: 24px 24px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    
+    #info-sidebar.open {
+        transform: translateY(0);
+    }
+}
