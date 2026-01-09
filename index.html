@@ -340,11 +340,7 @@ body {
   <script>
    
 
-// A small Blue Square (representing Manufacturing)
-const MANUFACTURING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALElEQVR42mNkYPhfzcDAwMgABX9FGBkYGBmIApM1AC7BUIBDPWpA9v8fMwMAl7YID6Y6+6sAAAAASUVORK5CYII=';
 
-// A small Red Square (representing Support)
-const SUPPORT_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALElEQVR42mP8z8BwAIyZGBgYGBmIApM1AC7BUIBDPWpA9v8fMwMAl7YID6Y6+6sAAAAASUVORK5CYII=';
 
     const REGION_LABEL = {
       AMER: '🌎 AMER: North & Latin America',
@@ -435,8 +431,11 @@ const WHATSAPP_SVG = `
   </svg>
 `;
 
-const MANUFACTURING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO0pG8sAAAAASUVORK5CYII=';
-const SUPPORT_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO0pG8sAAAAASUVORK5CYII=';
+// A small Blue Square (representing Manufacturing)
+const MANUFACTURING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALElEQVR42mNkYPhfzcDAwMgABX9FGBkYGBmIApM1AC7BUIBDPWpA9v8fMwMAl7YID6Y6+6sAAAAASUVORK5CYII=';
+
+// A small Red Square (representing Support)
+const SUPPORT_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALElEQVR42mP8z8BwAIyZGBgYGBmIApM1AC7BUIBDPWpA9v8fMwMAl7YID6Y6+6sAAAAASUVORK5CYII=';
 
     function loadMapIcons(){
       return new Promise((resolve) => {
@@ -761,6 +760,7 @@ document.getElementById('resetMapBtn').onclick = ()=>{
   <script src="sidebar.js"></script>
 </body>
 </html>
+
 
 
 
