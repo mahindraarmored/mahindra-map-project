@@ -3,6 +3,7 @@
  * Manages Hygraph CMS integration and coordinate standardization
  */
 const HYGRAPH_ENDPOINT = 'https://ap-south-1.cdn.hygraph.com/content/cmfpk332g005s08uylh0ezd8a/master';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoibnJhanBrIiwiYSI6ImNtZnFoejJhaDBua2cybHM4dHRtZ2xycW4ifQ.wAJkzxTCQiRmIZuSyW59Uw';
 
 /**
  * Fallback: Fetches center coordinates for a country if specific hub coords are missing
@@ -77,4 +78,5 @@ async function fetchServiceHubs() {
         console.error("Hygraph Fetch Error:", err);
         return [];
     }
+
 }
