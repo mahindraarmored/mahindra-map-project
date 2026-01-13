@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Global Service Network | Mahindra Armored</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+    
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css"/>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#f8fafc] overflow-hidden h-screen w-screen m-0 p-0 font-['Inter']">
+
+    <main class="relative h-full w-full flex overflow-hidden">
+    <div class="main-search-container absolute top-5 left-5 z-[100] pointer-events-none flex flex-col gap-3">
+        
+        <div id="search-and-toggle-group" class="bg-white p-4 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.2)] pointer-events-auto flex flex-col gap-3">
+            <header class="px-1">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] m-0">Operational Network</h2>
+                <p class="text-lg font-extrabold text-slate-900 leading-tight m-0">Service Hubs</p>
+            </header>
+            <div id="geocoder-container"></div>
+            <div class="flex items-center justify-between gap-2 px-1 border-t border-slate-50 pt-3 mt-1">
+                <div id="regionChips" class="flex gap-1.5 overflow-x-auto no-scrollbar"></div>
+                <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
+                <button id="resetMapBtn" class="min-w-[32px] h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">⟲</button>
+            </div>
+        </div>
+
+        <aside id="info-sidebar" class="bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.15)] overflow-y-auto pointer-events-auto">
+            <button onclick="window.closeSidebar()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 z-[101] transition-colors">✕</button>
+            <div id="sidebar-content"></div>
+        </aside>
+    </div>
+<div class="legend-chips-container">
+    <div class="legend-chip-item">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #dc2626; border: 1.5px solid #ffffff; box-shadow: 0 0 0 1px #dc2626;"></span>
+        <span class="legend-chip-text" style="font-size: 13px; font-weight: 500; color: #3c4043;">Manufacturing Plant</span>
+    </div>
+
+    <div class="legend-chip-item">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #2563eb; border: 1.5px solid #ffffff; box-shadow: 0 0 0 1px #2563eb;"></span>
+        <span class="legend-chip-text" style="font-size: 13px; font-weight: 500; color: #3c4043;">Regional Service Center</span>
+    </div>
+</div>
+
+    <div id="map" class="flex-1"></div>
+</main>
+
+    <script src="js/data-fetch.js"></script>
+    <script src="js/ui-logic.js"></script>
+    <script src="js/map-init.js"></script>
+</body>
+</html>
