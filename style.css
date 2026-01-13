@@ -1,20 +1,31 @@
 /* --- GLOBAL RESET & TYPOGRAPHY --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-body {
-    font-family: 'Inter', sans-serif;
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    background-color: #f8fafc;
-    -webkit-font-smoothing: antialiased;
 }
 
-/* --- MAP CANVAS --- */
-#map {
-    width: 100vw;
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+}
+
+.map-page {
+    height: calc(100vh - 80px); /* navbar height */
+    width: 100%;
+    position: relative;
+}
+.page {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
-    z-index: 1;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
 }
 
 /* --- FLOATING CONTROL PANEL --- */
