@@ -62,7 +62,7 @@ function openSidebar(p) {
     </div>
 
     <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] m-0">
-        ${p.serviceKey === 'fullCapabilityHub' ? 'Manufacturing Plant' : 'Regional Service Center'}
+        ${p.serviceKey === 'fullCapabilityHub' ? 'Armoured Vehicle (AV) Manufacturing Plant' : 'Regional Service Support Center'}
     </h2>
     <p class="text-lg font-extrabold text-slate-900 leading-tight m-0">${p.country}</p>
     
@@ -202,3 +202,4 @@ window.buildRegionChips = function (list) {
     );
   };
 };
+
