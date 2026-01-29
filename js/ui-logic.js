@@ -51,12 +51,8 @@ function openSidebar(p) {
 
   content.innerHTML = `
 
-<div>
-</div>
-
-
-<div class="profile-card-header" style="text-align: center;">
-    <div class="hub-logo-wrapper">
+<div class="profile-card-header" style="text-align: center; padding-top: 40px; position: relative;">
+    <div class="hub-logo-wrapper" style="position: absolute; top: -35px;" >
         <img src="${p.logo}" alt="Hub Logo" class="hub-logo-circular">
     </div>
 
@@ -201,6 +197,7 @@ window.buildRegionChips = function (list) {
     );
   };
 };
+
 
 
 
