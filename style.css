@@ -274,7 +274,7 @@ body {
 .profile-card-header {
     position: relative;
     /* Spacing synced with .main-search-container padding */
-    margin: 12px 24px 0 24px !important; 
+    /* margin: 12px 24px 0 24px !important; */
     padding: 45px 20px 20px 20px !important; /* Top padding clears the floating logo */
     
     /* Glassmorphism Logic from #search-and-toggle-group */
@@ -400,3 +400,4 @@ body {
     letter-spacing: 0.05em;
 
 }
+
