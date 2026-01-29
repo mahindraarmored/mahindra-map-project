@@ -51,7 +51,8 @@ function openSidebar(p) {
 
   content.innerHTML = `
 
-
+<div>
+</div>
 
 
 <div class="profile-card-header" style="text-align: center;">
@@ -200,5 +201,6 @@ window.buildRegionChips = function (list) {
     );
   };
 };
+
 
 
