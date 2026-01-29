@@ -51,9 +51,7 @@ function openSidebar(p) {
 
   content.innerHTML = `
 
-<div class="profile-hero-container" style="background: #1a1d21; height: 140px; position: relative; overflow: visible;">
-    <div style="position: absolute; inset: 0; background-image: url('beamred.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-</div>
+
 
 
 <div class="profile-card-header" style="text-align: center;">
@@ -202,4 +200,5 @@ window.buildRegionChips = function (list) {
     );
   };
 };
+
 
