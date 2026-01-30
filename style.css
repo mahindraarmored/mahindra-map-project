@@ -200,19 +200,47 @@ body {
     }
     
     #info-sidebar {
-        position: fixed; /* Fix for mobile bottom sheets */
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        max-height: 65%;
-        transform: translateY(100%);
-        border-radius: 24px 24px 0 0;
-        margin-top: 0;
-    }
-    
-    #info-sidebar.open {
-        transform: translateY(0);
-    }
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    /* iPhone safe area */
+    padding-bottom: env(safe-area-inset-bottom);
+
+    /* Always on top of map + controls */
+    z-index: 9999 !important;
+
+    /* Bottom-sheet shape */
+    border-radius: 24px 24px 0 0;
+
+    /* Hidden state */
+    transform: translateY(100%);
+    opacity: 1;               /* avoid fade issues on mobile */
+    max-height: 0;            /* keep collapsed */
+    pointer-events: none;
+
+    /* scrolling inside sheet */
+    overflow: hidden;         /* default; open state will scroll */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #info-sidebar.open {
+    transform: translateY(0);
+    pointer-events: auto;
+
+    /* Mobile-safe height: never exceeds screen, respects notch */
+    max-height: calc(80dvh - env(safe-area-inset-top));
+    overflow-y: auto;
+  }
+
+  /* Keep the close button always tappable */
+  #info-sidebar button {
+    position: sticky;
+    top: 12px;
+    z-index: 10000;
+  }
+
 }
 
 
@@ -441,6 +469,7 @@ body {
 #sidebar-content .profile-card-header {
   padding-top: 60px !important;
 }
+
 
 
 
