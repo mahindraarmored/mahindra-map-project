@@ -247,7 +247,7 @@ body {
 /* --- MOBILE-OPTIMIZED CHIP CAROUSEL --- */
 .legend-chips-container {
     position: absolute;
-    bottom: 32px; /* Sufficient clearance for Mapbox attribution */
+    bottom: 60px; /* Sufficient clearance for Mapbox attribution */
     left: 0;
     right: 0;
     z-index: 100;
@@ -469,6 +469,7 @@ body {
 #sidebar-content .profile-card-header {
   padding-top: 60px !important;
 }
+
 
 
 
