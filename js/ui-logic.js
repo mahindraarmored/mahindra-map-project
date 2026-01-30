@@ -96,7 +96,7 @@ function openSidebar(p) {
         }).join('')}
     </div>
 
-    <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+    <div style="display: flex; gap: 12px; ">
         <a href="https://wa.me/${wa}" target="_blank" style="flex: 1; display: flex; align-items: center; justify-content: center; background: #16a34a; color: #ffffff; text-decoration: none; height: 44px; border-radius: 12px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">
             💬 WhatsApp
         </a>
@@ -197,6 +197,7 @@ window.buildRegionChips = function (list) {
     );
   };
 };
+
 
 
 
