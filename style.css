@@ -401,3 +401,27 @@ body {
 
 }
 
+/* === ULTRA-COMPACT MAPBOX SEARCH (ISOLATED) === */
+#search-and-toggle-group .mapboxgl-ctrl-geocoder {
+  height: 30px !important;
+  min-height: 30px !important;
+  border-radius: 8px !important;
+}
+
+#search-and-toggle-group .mapboxgl-ctrl-geocoder input {
+  height: 30px !important;
+  padding: 4px 8px 4px 28px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+#search-and-toggle-group .mapboxgl-ctrl-geocoder--icon {
+  top: 7px !important;
+  left: 8px !important;
+  transform: scale(0.75);
+}
+
+#search-and-toggle-group .mapboxgl-ctrl-geocoder--button {
+  transform: scale(0.75);
+}
+
