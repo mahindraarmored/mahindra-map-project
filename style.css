@@ -441,24 +441,8 @@ body {
 #sidebar-content .profile-card-header {
   padding-top: 60px !important;
 }
-/* Sidebar heading = "Operational Network" style */
-#sidebar-content .profile-card-header h2 {
-  font-size: 10px;
-  font-weight: 900;
-  color: #94a3b8;              /* slate-400 */
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  margin: 0;
-}
 
-/* Sidebar country = "Service Hubs" style */
-#sidebar-content .profile-card-header p {
-  font-size: 18px;
-  font-weight: 800;
-  color: #0f172a;              /* slate-900 */
-  line-height: 1.2;
-  margin: 0;
-}
+
 
 
 
