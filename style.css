@@ -39,7 +39,7 @@ body {
 .main-search-container {
     width: 95%;
     max-width: 390px;
-    top: 20px; /* Adjust this value if you want the panel higher or lower */
+    top: 120px; /* Adjust this value if you want the panel higher or lower */
 }
 
 #search-and-toggle-group {
@@ -424,4 +424,5 @@ body {
 #search-and-toggle-group .mapboxgl-ctrl-geocoder--button {
   transform: scale(0.75);
 }
+
 
