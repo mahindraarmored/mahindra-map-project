@@ -425,5 +425,16 @@ body {
   transform: scale(0.75);
 }
 
+/* Fix hub logo container positioning inside sidebar (override inline top:-35px) */
+#sidebar-content .hub-logo-wrapper {
+  top: 14px !important;            /* keep it INSIDE the card */
+  transform: translateX(-50%) !important;
+}
+
+/* Ensure header has enough space for the logo */
+#sidebar-content .profile-card-header {
+  padding-top: 70px !important;    /* increase to clear logo */
+}
+
 
 
