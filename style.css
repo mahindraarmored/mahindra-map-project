@@ -425,16 +425,23 @@ body {
   transform: scale(0.75);
 }
 
-/* Half-floating logo (safe override of inline top:-35px) */
-#sidebar-content .profile-card-header{
-  padding-top: 55px !important; /* space for the floating logo */
-  overflow: visible !important; /* prevent clipping */
-}
-
-#sidebar-content .hub-logo-wrapper{
-  top: -22px !important;        /* half-floating */
+/* Allow logo to float OUTSIDE without clipping */
+#info-sidebar,
+#sidebar-content,
+.profile-card-header {
   overflow: visible !important;
 }
+
+/* True half-floating logo (fully visible, straddling edge) */
+#sidebar-content .hub-logo-wrapper {
+  top: -40px !important;     /* half outside */
+}
+
+/* Create space so content does not collide */
+#sidebar-content .profile-card-header {
+  padding-top: 60px !important;
+}
+
 
 
 
