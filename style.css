@@ -425,16 +425,17 @@ body {
   transform: scale(0.75);
 }
 
-/* Fix hub logo container positioning inside sidebar (override inline top:-35px) */
-#sidebar-content .hub-logo-wrapper {
-  top: 14px !important;            /* keep it INSIDE the card */
-  transform: translateX(-50%) !important;
+/* Half-floating logo (safe override of inline top:-35px) */
+#sidebar-content .profile-card-header{
+  padding-top: 55px !important; /* space for the floating logo */
+  overflow: visible !important; /* prevent clipping */
 }
 
-/* Ensure header has enough space for the logo */
-#sidebar-content .profile-card-header {
-  padding-top: 70px !important;    /* increase to clear logo */
+#sidebar-content .hub-logo-wrapper{
+  top: -22px !important;        /* half-floating */
+  overflow: visible !important;
 }
+
 
 
 
