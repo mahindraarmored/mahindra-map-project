@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     center: [25, 15],
     zoom: isMobile ? 1.5 : 2.5
   };
+  // --- STOP GLOBE ROTATION ON USER INTERACTION ---
+  window.map.on('mousedown', () => { window.userInteracted = true; });
+  window.map.on('touchstart', () => { window.userInteracted = true; });
+  window.map.on('wheel', () => { window.userInteracted = true; });
 
 
   window.map.on('load', async () => {
@@ -277,4 +281,5 @@ function rotateGlobe() {
   }
   requestAnimationFrame(rotateGlobe);
 }
+
 
