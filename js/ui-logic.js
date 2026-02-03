@@ -135,12 +135,26 @@ window.closeSidebar = () => {
   window.detailOpen = false;
   window.userInteracted = false; // allows rotation again
 
+  // Return to the exact camera from before the click/search
+  if (window.map && window.returnCamera) {
+    window.map.easeTo({
+      center: window.returnCamera.center,
+      zoom: window.returnCamera.zoom,
+      bearing: window.returnCamera.bearing,
+      pitch: window.returnCamera.pitch,
+      duration: 900,
+      essential: true
+    });
+    window.returnCamera = null;
+    return;
+  }
+
+  // Fallback if nothing was stashed
   if (window.map) {
     const isMobile = getMobileState();
-
     window.map.easeTo({
       center: [25, 15],
-      zoom: isMobile ? 1.5 : 2.5, // back to default-on-load
+      zoom: isMobile ? 1.5 : 2.5,
       bearing: 0,
       pitch: 0,
       duration: 900,
@@ -148,6 +162,7 @@ window.closeSidebar = () => {
     });
   }
 };
+
 
 
 
@@ -218,6 +233,7 @@ maxZoom: getMobileState() ? 3.2 : 4.5,
     );
   };
 };
+
 
 
 
