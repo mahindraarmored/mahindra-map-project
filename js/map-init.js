@@ -9,11 +9,22 @@ window.detailOpen = false;
 window.userInteracted = false;
 window.currentRegionFilter = '';
 window.lastOpenedCountry = null;
+window.returnCamera = null; // saves camera before zoom-in
+
 
 // ===== NEW 1 =====
 const getMobileState = () => window.matchMedia('(max-width: 640px)').matches;
+function stashReturnCamera() {
+  if (!window.map) return;
+  window.returnCamera = {
+    center: window.map.getCenter(),
+    zoom: window.map.getZoom(),
+    bearing: window.map.getBearing(),
+    pitch: window.map.getPitch()
+  };
+}
 
-
+let map;
 document.addEventListener('DOMContentLoaded', async () => {
   const isMobile = getMobileState();
 
@@ -24,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     zoom: isMobile ? 1.5 : 2.5,
     projection: 'globe'
   });
-
+map = window.map;
   const DEFAULT_VIEW = {
     center: [25, 15],
     zoom: isMobile ? 1.5 : 2.5
@@ -92,6 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       window.lastOpenedCountry = hub.country;
       window.userInteracted = true;
+if (!window.detailOpen) stashReturnCamera();
 
       map.flyTo({
   center: [hub.location.lng, hub.location.lat],
@@ -113,6 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 const resetBtn = document.getElementById('resetMapBtn');
 if (resetBtn) {
   resetBtn.addEventListener('click', () => {
+     window.returnCamera = null;
     window.currentRegionFilter = '';
     window.userInteracted = false;
     window.lastOpenedCountry = null;
@@ -223,10 +236,11 @@ function render() {
     map.on('click', 'points', e => {
   const props = e.features[0].properties;
   const coords = e.features[0].geometry.coordinates;
+if (!window.detailOpen) stashReturnCamera();
 
   showSkeleton();
   openSidebar(props);
-
+ 
   map.flyTo({
     center: coords,
     zoom: getMobileState() ? 2.6 : 4.5,
@@ -288,6 +302,7 @@ function rotateGlobe() {
   }
   requestAnimationFrame(rotateGlobe);
 }
+
 
 
 
