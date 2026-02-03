@@ -129,25 +129,26 @@ if (window.map && sidebar) {
 }
 
 window.closeSidebar = () => {
-  document.getElementById('info-sidebar').classList.remove('open');
+  const sidebar = document.getElementById('info-sidebar');
+  if (sidebar) sidebar.classList.remove('open');
+
   window.detailOpen = false;
+  window.userInteracted = false; // allows rotation again
 
-  // resume rotation after focused interaction
-  window.userInteracted = false;
-
-  // gently zoom back out if user came from search
   if (window.map) {
-  const targetZoom = getMobileState() ? 2.6 : 3.5;
-  if (map.getZoom() > targetZoom) {
-    map.easeTo({
-      zoom: targetZoom,
-      duration: 800,
+    const isMobile = getMobileState();
+
+    window.map.easeTo({
+      center: [25, 15],
+      zoom: isMobile ? 1.5 : 2.5, // back to default-on-load
+      bearing: 0,
+      pitch: 0,
+      duration: 900,
       essential: true
     });
   }
-}
-
 };
+
 
 
 window.currentRegionFilter = '';
@@ -217,6 +218,7 @@ maxZoom: getMobileState() ? 3.2 : 4.5,
     );
   };
 };
+
 
 
 
