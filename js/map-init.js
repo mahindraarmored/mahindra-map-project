@@ -208,7 +208,14 @@ function render() {
           'supportCenter', 'h-s',
           'h-s'
         ],
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 1.2],
+        'icon-size': [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  2, getMobileState() ? 0.35 : 0.5,
+  9, getMobileState() ? 0.9  : 1.2
+],
+
         'icon-allow-overlap': true
       }
     });
@@ -281,5 +288,6 @@ function rotateGlobe() {
   }
   requestAnimationFrame(rotateGlobe);
 }
+
 
 
