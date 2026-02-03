@@ -33,7 +33,7 @@ body {
 /* Update: Added a small buffer for aesthetic breathing room below the Navbar */
 .main-search-container {
     width: 95%;
-    max-width: 390px;
+    max-width: 320px;
     top: 70px !important; /* Adjust this value if you want the panel higher or lower */
 }
 
@@ -542,3 +542,4 @@ body {
 #sidebar-content .profile-card-header {
   padding-top: 60px !important;
 }
+
