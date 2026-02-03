@@ -113,8 +113,21 @@ function openSidebar(p) {
 
  
 
-  document.getElementById('info-sidebar').classList.add('open');
+  const sidebar = document.getElementById('info-sidebar');
+sidebar.classList.add('open');
+
+// Resize map exactly when the bottom-sheet transition finishes (prevents gray tiles)
+if (window.map && sidebar) {
+  const handleTransitionEnd = (e) => {
+    if (e.propertyName === 'transform') {
+      window.map.resize();
+      sidebar.removeEventListener('transitionend', handleTransitionEnd);
+    }
+  };
+  sidebar.addEventListener('transitionend', handleTransitionEnd);
 }
+}
+
 window.closeSidebar = () => {
   document.getElementById('info-sidebar').classList.remove('open');
   window.detailOpen = false;
@@ -123,13 +136,17 @@ window.closeSidebar = () => {
   window.userInteracted = false;
 
   // gently zoom back out if user came from search
-  if (window.map && map.getZoom() > 3.5) {
+  if (window.map) {
+  const targetZoom = getMobileState() ? 2.6 : 3.5;
+  if (map.getZoom() > targetZoom) {
     map.easeTo({
-      zoom: 3.5,
+      zoom: targetZoom,
       duration: 800,
       essential: true
     });
   }
+}
+
 };
 
 
@@ -190,13 +207,17 @@ window.buildRegionChips = function (list) {
         [maxLng, maxLat]
       ],
       {
-        padding: { top: 120, bottom: 120, left: 420, right: 120 },
-        maxZoom: 4.5,
+        padding: getMobileState()
+  ? { top: 140, bottom: 220, left: 40, right: 40 }   // bottom space for sheet/legend
+  : { top: 120, bottom: 120, left: 420, right: 120 },
+maxZoom: getMobileState() ? 3.2 : 4.5,
+        
         duration: 1000
       }
     );
   };
 };
+
 
 
 
