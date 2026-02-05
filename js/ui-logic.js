@@ -32,6 +32,7 @@ function getServiceIconsHTML(p) {
       if (!icon) return '';
 
       const waLink = buildWhatsAppLink(p.phone, service, p.hubID);
+const waLink = buildWhatsAppLink(p.phone, s, p.hubID);
 
       return `
         <a href="${waLink}"
@@ -264,6 +265,7 @@ maxZoom: getMobileState() ? 3.2 : 4.5,
     );
   };
 };
+
 
 
 
