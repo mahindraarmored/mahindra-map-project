@@ -11,6 +11,11 @@ const SERVICE_LABEL = {
     'AV Disposals'
   ]
 };
+function buildWhatsAppLink(phone, service, hubID) {
+  const wa = (phone || '').replace(/[^\d]/g, '') || '971527118654';
+  const msg = encodeURIComponent(`Service: ${service}\nHub ID: ${hubID}`);
+  return `https://wa.me/${wa}?text=${msg}`;
+}
 
 function getServiceIconsHTML(p) {
   const ICON_MAP = {
@@ -22,11 +27,24 @@ function getServiceIconsHTML(p) {
   };
 
   return (SERVICE_LABEL[p.serviceKey] || [])
-    .map(s => ICON_MAP[s])
-    .filter(Boolean)
-    .map(i => `<span class="text-lg">${i}</span>`)
+    .map(service => {
+      const icon = ICON_MAP[service];
+      if (!icon) return '';
+
+      const waLink = buildWhatsAppLink(p.phone, service, p.hubID);
+
+      return `
+        <a href="${waLink}"
+           target="_blank"
+           rel="noopener"
+           title="${service}"
+           onclick="event.stopPropagation()">
+          <span class="text-lg">${icon}</span>
+        </a>`;
+    })
     .join('');
 }
+
 
 function showSkeleton() {
   window.detailOpen = true;
@@ -89,11 +107,23 @@ function openSidebar(p) {
             const icon = ICON_MAP[s] || '✓';
 
             return `
-            <div class="legend-chip-item" style="display: flex; align-items: center; gap: 12px; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px; padding: 10px 14px; width: 100%;">
-                <span style="font-size: 16px; display: flex; align-items: center; justify-content: center;">${icon}</span>
-                <span class="legend-chip-text" style="font-size: 13px; font-weight: 500; color: #3c4043;">${s}</span>
-            </div>`;
-        }).join('')}
+  <a href="${waLink}"
+     target="_blank"
+     rel="noopener"
+     onclick="event.stopPropagation()"
+     class="legend-chip-item"
+     style="display:flex;align-items:center;gap:12px;
+            background:#f8f9fa;border:1px solid #dadce0;
+            border-radius:8px;padding:10px 14px;
+            width:100%;text-decoration:none;color:inherit;">
+    <span style="font-size:16px;display:flex;align-items:center;justify-content:center;">
+      ${icon}
+    </span>
+    <span class="legend-chip-text"
+          style="font-size:13px;font-weight:500;color:#3c4043;">
+      ${s}
+    </span>
+  </a>`;
     </div>
 
     <div style="display: flex; gap: 12px; ">
@@ -233,6 +263,7 @@ maxZoom: getMobileState() ? 3.2 : 4.5,
     );
   };
 };
+
 
 
 
